@@ -25,9 +25,8 @@ namespace ResearchProgram
             table.Columns.Add("p list", typeof(string));
             table.Columns.Add("K", typeof(int));
             table.Columns.Add("{S, k} GCD", typeof(double));
-            table.Columns.Add("{#Repeat, k} GCD", typeof(string));
             table.Columns.Add("Density", typeof(double));
-            table.Columns.Add("Density * k", typeof(double));
+            table.Columns.Add("Formula Result", typeof(double));
 
             return table;
         }
