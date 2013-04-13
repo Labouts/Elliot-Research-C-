@@ -27,6 +27,8 @@ namespace ResearchProgram
             table.Columns.Add("{S, k} GCD", typeof(double));
             table.Columns.Add("Density", typeof(double));
             table.Columns.Add("Formula Result", typeof(double));
+            table.Columns.Add("Error", typeof(double));
+            table.Columns.Add("Density * K * gcd(k, 2*S(2), 3*S(3) ... n*S(n))", typeof(double));
 
             return table;
         }

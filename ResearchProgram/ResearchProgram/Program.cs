@@ -18,19 +18,24 @@ namespace ResearchProgram
             uint[][] scaleList1 = new uint[3][];
             uint[][] factorList1 = new uint[3][];
 
-            divisorList1[0] = new uint[] { 4 };
+            divisorList1[0] = new uint[] { 3*5 };
             scaleList1[0] = new uint[] { 1 };
-            factorList1[0] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6) };
+            factorList1[0] = new uint[] { (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6), (uint)Math.Pow(2, 7),(uint)Math.Pow(3, 8),
+                                          (uint)Math.Pow(5, 2),(uint)Math.Pow(5, 3),(uint)Math.Pow(5, 4),(uint)Math.Pow(5, 5),(uint)Math.Pow(5, 6), (uint)Math.Pow(5, 7),(uint)Math.Pow(5, 8),
+                                          (uint)Math.Pow(3, 2)*(uint)Math.Pow(5, 2),(uint)Math.Pow(3, 3)*(uint)Math.Pow(5, 3),(uint)Math.Pow(3, 4) * (uint)Math.Pow(5, 4),(uint)Math.Pow(3, 2) * (uint)Math.Pow(5, 5), (uint)Math.Pow(3, 2) * (uint)Math.Pow(5, 6), (uint)Math.Pow(3, 3) * (uint)Math.Pow(5, 7), 3 * (uint)Math.Pow(5, 8)};
 
 
-            divisorList1[1] = new uint[] { 6 };
+            divisorList1[1] = new uint[] { 2 * 7 };
             scaleList1[1] = new uint[] { 1 };
-            factorList1[1] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6),
-                                          (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6)};
+            factorList1[1] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6), (uint)Math.Pow(2, 7),(uint)Math.Pow(2, 8),
+                                          (uint)Math.Pow(7, 2),(uint)Math.Pow(7, 3),(uint)Math.Pow(7, 4),(uint)Math.Pow(7, 5),(uint)Math.Pow(7, 6), (uint)Math.Pow(7, 7),(uint)Math.Pow(7, 8),
+                                          (uint)Math.Pow(2, 2)*(uint)Math.Pow(7, 2),(uint)Math.Pow(2, 3)*(uint)Math.Pow(7, 3),(uint)Math.Pow(2, 4) * (uint)Math.Pow(7, 4),(uint)Math.Pow(2, 2) * (uint)Math.Pow(7, 5), (uint)Math.Pow(2, 2) * (uint)Math.Pow(7, 6), (uint)Math.Pow(2, 3) * (uint)Math.Pow(7, 7), 3 * (uint)Math.Pow(7, 8)};
 
-            divisorList1[2] = new uint[] { 9 };
+            divisorList1[2] = new uint[] { 3*7 };
             scaleList1[2] = new uint[] { 1 };
-            factorList1[2] = new uint[] { (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6)};
+            factorList1[2] = new uint[] { (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6), (uint)Math.Pow(3, 7),(uint)Math.Pow(3, 8),
+                                          (uint)Math.Pow(7, 2),(uint)Math.Pow(7, 3),(uint)Math.Pow(7, 4),(uint)Math.Pow(7, 5),(uint)Math.Pow(7, 6), (uint)Math.Pow(7, 7),(uint)Math.Pow(7, 8),
+                                          (uint)Math.Pow(3, 2)*(uint)Math.Pow(7, 2),(uint)Math.Pow(3, 3)*(uint)Math.Pow(7, 3),(uint)Math.Pow(3, 4) * (uint)Math.Pow(7, 4),(uint)Math.Pow(3, 2) * (uint)Math.Pow(7, 5), (uint)Math.Pow(3, 2) * (uint)Math.Pow(7, 6), (uint)Math.Pow(3, 3) * (uint)Math.Pow(7, 7), 3 * (uint)Math.Pow(7, 8)};
 
             new Thread(delegate()
             {
@@ -42,18 +47,24 @@ namespace ResearchProgram
             uint[][] scaleList2 = new uint[3][];
             uint[][] factorList2 = new uint[3][];
 
-            divisorList2[0] = new uint[] { 10 };
+            divisorList2[0] = new uint[] { 2*5*7 };
             scaleList2[0] = new uint[] { 1 };
-            factorList2[0] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6),
-                                          (uint)Math.Pow(5, 2),(uint)Math.Pow(5, 3),(uint)Math.Pow(5, 4),(uint)Math.Pow(5, 5),(uint)Math.Pow(5, 6) };
+            factorList2[0] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6), (uint)Math.Pow(2, 7),(uint)Math.Pow(2, 8),
+                                          (uint)Math.Pow(5, 2),(uint)Math.Pow(5, 3),(uint)Math.Pow(5, 4),(uint)Math.Pow(5, 5),(uint)Math.Pow(5, 6), (uint)Math.Pow(5, 7),(uint)Math.Pow(5, 8),
+                                          (uint)Math.Pow(7, 2),(uint)Math.Pow(7, 3),(uint)Math.Pow(7, 4),(uint)Math.Pow(7, 5),(uint)Math.Pow(7, 6), (uint)Math.Pow(7, 7),(uint)Math.Pow(7, 8),
+                                          (uint)Math.Pow(5, 2)*(uint)Math.Pow(7, 2),(uint)Math.Pow(5, 3)*(uint)Math.Pow(7, 3),(uint)Math.Pow(5, 4) * (uint)Math.Pow(7, 4),(uint)Math.Pow(5, 2) * (uint)Math.Pow(7, 5), (uint)Math.Pow(5, 2) * (uint)Math.Pow(7, 6), (uint)Math.Pow(5, 3) * (uint)Math.Pow(7, 7), 3 * (uint)Math.Pow(7, 8),
+                                          (uint)Math.Pow(2, 2)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(7, 2),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 3)*(uint)Math.Pow(7, 3),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(7, 2), (uint)Math.Pow(2, 4)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(7, 2)};
 
-            divisorList2[1] = new uint[] { 12 };
+            divisorList2[1] = new uint[] { 5 * 7 };
             scaleList2[1] = new uint[] { 1 };
-            factorList2[1] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6),
-                                          (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6)};
+            factorList2[1] = new uint[] { (uint)Math.Pow(5, 2),(uint)Math.Pow(5, 3),(uint)Math.Pow(5, 4),(uint)Math.Pow(5, 5),(uint)Math.Pow(5, 6), (uint)Math.Pow(5, 7),(uint)Math.Pow(5, 8),
+                                          (uint)Math.Pow(7, 2),(uint)Math.Pow(7, 3),(uint)Math.Pow(7, 4),(uint)Math.Pow(7, 5),(uint)Math.Pow(7, 6), (uint)Math.Pow(7, 7),(uint)Math.Pow(7, 8),
+                                          (uint)Math.Pow(5, 2)*(uint)Math.Pow(7, 2),(uint)Math.Pow(5, 3)*(uint)Math.Pow(7, 3),(uint)Math.Pow(5, 4) * (uint)Math.Pow(7, 4),(uint)Math.Pow(5, 2) * (uint)Math.Pow(7, 5), (uint)Math.Pow(5, 2) * (uint)Math.Pow(7, 6), (uint)Math.Pow(5, 3) * (uint)Math.Pow(7, 7), 3 * (uint)Math.Pow(7, 8)};
 
-            divisorList2[2] = new uint[] { 14 };
-            scaleList2[2] = new uint[] { 1 };
+
+
+            divisorList2[2] = new uint[] { 2, 7 };
+            scaleList2[2] = new uint[] { 5, 3 };
             factorList2[2] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6),
                                           (uint)Math.Pow(7, 2),(uint)Math.Pow(7, 3),(uint)Math.Pow(7, 4),(uint)Math.Pow(7, 5),(uint)Math.Pow(7, 6)};
 
@@ -66,19 +77,25 @@ namespace ResearchProgram
             uint[][] scaleList3 = new uint[3][];
             uint[][] factorList3 = new uint[3][];
 
-            divisorList3[0] = new uint[] { 15 };
-            scaleList3[0] = new uint[] { 1 };
-            factorList3[0] = new uint[] { (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6),
-                                          (uint)Math.Pow(5, 2),(uint)Math.Pow(5, 3),(uint)Math.Pow(5, 4),(uint)Math.Pow(5, 5),(uint)Math.Pow(5, 6) };
+            divisorList3[0] = new uint[] { 12, 14, 16 };
+            scaleList3[0] = new uint[] { 1, 1, 1 };
+            factorList3[0] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6), (uint)Math.Pow(2, 7),(uint)Math.Pow(2, 8),(uint)Math.Pow(2, 9),(uint)Math.Pow(2, 10), (uint)Math.Pow(2, 11),(uint)Math.Pow(2, 12),};
 
-            divisorList3[1] = new uint[] { 16 };
-            scaleList3[1] = new uint[] { 1 };
-            factorList3[1] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6) };
+            divisorList3[1] = new uint[] { 2, 3, 5 };
+            scaleList3[1] = new uint[] { 1, 1, 1 };
+            factorList3[1] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6), (uint)Math.Pow(2, 7),(uint)Math.Pow(2, 8),
+                                          (uint)Math.Pow(5, 2),(uint)Math.Pow(5, 3),(uint)Math.Pow(5, 4),(uint)Math.Pow(5, 5),(uint)Math.Pow(5, 6), (uint)Math.Pow(5, 7),(uint)Math.Pow(5, 8),
+                                          (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6), (uint)Math.Pow(3, 7),(uint)Math.Pow(3, 8),
+                                          (uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2),(uint)Math.Pow(5, 3)*(uint)Math.Pow(3, 3),(uint)Math.Pow(5, 4) * (uint)Math.Pow(3, 4),(uint)Math.Pow(5, 2) * (uint)Math.Pow(3, 5), (uint)Math.Pow(5, 2) * (uint)Math.Pow(3, 6), (uint)Math.Pow(5, 3) * (uint)Math.Pow(3, 7), 3 * (uint)Math.Pow(3, 8),
+                                          (uint)Math.Pow(2, 2)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 3)*(uint)Math.Pow(3, 3),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2), (uint)Math.Pow(2, 4)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2)};
 
-            divisorList3[2] = new uint[] { 18 };
-            scaleList3[2] = new uint[] { 1 };
-            factorList3[2] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6),
-                                          (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6)};
+            divisorList3[2] = new uint[] { 2, 3, 5 };
+            scaleList3[2] = new uint[] { 7, 11, 7 };
+            factorList3[2] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6), (uint)Math.Pow(2, 7),(uint)Math.Pow(2, 8),
+                                          (uint)Math.Pow(5, 2),(uint)Math.Pow(5, 3),(uint)Math.Pow(5, 4),(uint)Math.Pow(5, 5),(uint)Math.Pow(5, 6), (uint)Math.Pow(5, 7),(uint)Math.Pow(5, 8),
+                                          (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6), (uint)Math.Pow(3, 7),(uint)Math.Pow(3, 8),
+                                          (uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2),(uint)Math.Pow(5, 3)*(uint)Math.Pow(3, 3),(uint)Math.Pow(5, 4) * (uint)Math.Pow(3, 4),(uint)Math.Pow(5, 2) * (uint)Math.Pow(3, 5), (uint)Math.Pow(5, 2) * (uint)Math.Pow(3, 6), (uint)Math.Pow(5, 3) * (uint)Math.Pow(3, 7), 3 * (uint)Math.Pow(3, 8),
+                                          (uint)Math.Pow(2, 2)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 3)*(uint)Math.Pow(3, 3),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2), (uint)Math.Pow(2, 4)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2)};;
 
 
             new Thread(delegate()
@@ -91,16 +108,22 @@ namespace ResearchProgram
             uint[][] factorList4 = new uint[3][];
 
             divisorList4[0] = new uint[] { 4, 8, 12 };
-            scaleList4[0] = new uint[] { 4, 4, 4 };
+            scaleList4[0] = new uint[] { 9, 3, 3 };
             factorList4[0] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6) };
 
-            divisorList4[1] = new uint[] { 2, 6, 8, 12 };
-            scaleList4[1] = new uint[] { 3, 2, 3, 2 };
-            factorList4[1] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6) };
+            divisorList4[1] = new uint[] { 2, 3, 5, 7 };
+            scaleList4[1] = new uint[] { 1, 1, 1, 1 };
+            factorList4[1] = new uint[] { (uint)Math.Pow(2, 2) * (uint)Math.Pow(3, 2) * (uint)Math.Pow(5, 2) * (uint)Math.Pow(7, 2),(uint)Math.Pow(2, 2), (uint)Math.Pow(3, 2), (uint)Math.Pow(5, 2), (uint)Math.Pow(7, 2),
+                                          (uint)Math.Pow(2, 2) * (uint)Math.Pow(3, 2), (uint)Math.Pow(2, 2) * (uint)Math.Pow(5, 2), (uint)Math.Pow(2, 2) * (uint)Math.Pow(7, 2), (uint)Math.Pow(3, 2) * (uint)Math.Pow(5, 2),
+                                          (uint)Math.Pow(3, 2) * (uint)Math.Pow(7, 2), (uint)Math.Pow(5, 2) * (uint)Math.Pow(7, 2)};
 
-            divisorList4[2] = new uint[] { 2, 3, 4 };
-            scaleList4[2] = new uint[] { 3, 4, 3 };
-            factorList4[2] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6) };
+            divisorList4[2] = new uint[] {2, 3, 7  };
+            scaleList4[2] = new uint[] { 3, 5, 3 };
+            factorList4[2] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6), (uint)Math.Pow(2, 7),(uint)Math.Pow(2, 8),
+                                          (uint)Math.Pow(5, 2),(uint)Math.Pow(5, 3),(uint)Math.Pow(5, 4),(uint)Math.Pow(5, 5),(uint)Math.Pow(5, 6), (uint)Math.Pow(5, 7),(uint)Math.Pow(5, 8),
+                                          (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6), (uint)Math.Pow(3, 7),(uint)Math.Pow(3, 8),
+                                          (uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2),(uint)Math.Pow(5, 3)*(uint)Math.Pow(3, 3),(uint)Math.Pow(5, 4) * (uint)Math.Pow(3, 4),(uint)Math.Pow(5, 2) * (uint)Math.Pow(3, 5), (uint)Math.Pow(5, 2) * (uint)Math.Pow(3, 6), (uint)Math.Pow(5, 3) * (uint)Math.Pow(3, 7), 3 * (uint)Math.Pow(3, 8),
+                                          (uint)Math.Pow(2, 2)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 3)*(uint)Math.Pow(3, 3),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2), (uint)Math.Pow(2, 4)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2)};;
 
 
             new Thread(delegate()
@@ -112,9 +135,9 @@ namespace ResearchProgram
 
         static void multiTest(uint[][] divisorList, uint[][] scaleList, uint[][] factorList, string atEnd)
         {
-            ulong inputSize = 2000000000;
-            DataTable dtInteresting = FileWriter.getTable();
-            DataTable dtBoring = FileWriter.getTable();
+            ulong inputSize = 4000000000;
+            DataTable dtClose = FileWriter.getTable();
+            DataTable dtNotClose = FileWriter.getTable();
             for(int index = 0; index < divisorList.Length; index++)
             {
                 double[] density = NumberCruncher.densityOfUMultiK(inputSize, divisorList[index], scaleList[index], factorList[index]);
@@ -142,7 +165,7 @@ namespace ResearchProgram
                         gcdTwoArray[gcdindex] = scaleList[index][gcdindex];
                     }
                     gcdTwoArray[divisorList[index].Length] = factorList[index][densityIndex];
-                    uint gcdFromFormula = NumberCruncher.GCD(gcdTwoArray);
+                    uint littleGFromFormula = NumberCruncher.GCD(gcdTwoArray);
 
                     uint[] gcdSet = new uint[scaleList[index].Length + 1];
                     for(int gcdIndex = 0; gcdIndex < scaleList[index].Length; gcdIndex++)
@@ -152,7 +175,7 @@ namespace ResearchProgram
 
                     gcdSet[scaleList[index].Length] = factorList[index][densityIndex];
 
-                    uint bigGFromFomula = NumberCruncher.GCD(gcdSet) / gcdFromFormula;
+                    uint bigGFromFomula = NumberCruncher.GCD(gcdSet) / littleGFromFormula;
 
                     uint formulaSum = 0;
 
@@ -162,16 +185,19 @@ namespace ResearchProgram
                         formulaSum += NumberCruncher.GCD(tempArray);
                     }
 
-                    double expectedDensity = gcdFromFormula / (double)(factorList[index][densityIndex] * bigGFromFomula) * formulaSum;
+                    double expectedDensity = littleGFromFormula / (double)(factorList[index][densityIndex] * bigGFromFomula) * formulaSum;
 
-                    table = dtInteresting;
-                    if(Math.Abs((expectedDensity - density[densityIndex]) / density[densityIndex]) > 0.07)
+                    table = dtClose;
+                    double error = Math.Abs((expectedDensity - density[densityIndex]) / density[densityIndex]);
+
+                    if(error > 0.6)
                     {
-                        table = dtBoring;
+                        table = dtNotClose;
                     }
 
+                    double mulDivisor = density[densityIndex] * littleGFromFormula * factorList[index][densityIndex];
 
-                    table.Rows.Add(getArrayNumberString(divisorList[index], scaleList[index]), factorList[index][densityIndex], gcdOne, density[densityIndex], expectedDensity);                    
+                    table.Rows.Add(getArrayNumberString(divisorList[index], scaleList[index]), factorList[index][densityIndex], gcdOne, density[densityIndex], expectedDensity, error, mulDivisor);                    
                 }
 
                 lock(updateNum) {
@@ -185,8 +211,8 @@ namespace ResearchProgram
 
             lock(locker)
             {
-                FileWriter.saveTable("CommonFactor_April_7_Interesting" + atEnd + ".xlsx", dtInteresting);
-                FileWriter.saveTable("CommonFactor_April_7_Boring" + atEnd + ".xlsx", dtBoring);
+                FileWriter.saveTable("CommonFactor_April_7_Close" + atEnd + ".xlsx", dtClose);
+                FileWriter.saveTable("CommonFactor_April_7_NotClose" + atEnd + ".xlsx", dtNotClose);
             }
 
         }
