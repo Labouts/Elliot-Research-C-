@@ -8,27 +8,37 @@ namespace ResearchProgram
 {
     static class NumberCruncher
     {
-        public static double densityOfU(ulong inputSize, uint[] divisors,uint[] scale, uint factor)
+        public static double[] densityOfUMultiD(ulong inputSize, uint[] set, uint[] scale, uint[] dList)
         {
             ulong totalFactors = 0;
             ulong currNumFactors = 0;
-            ulong numWasTrue = 0;
-            uint toInc = GCD(divisors);
+            ulong[] numWasTrue = new ulong[dList.Length];
 
             for(ulong number = 0; number < inputSize; number++)
             {
-                for(uint index = 0; index < divisors.Length; index++)
+                for(uint index = 0; index < set.Length; index++)
                 {
-                    currNumFactors += w(number, divisors[index]) * scale[index];
+                    currNumFactors += w(number, set[index]) * scale[index];
                 }
                 totalFactors += currNumFactors;
 
-                if(totalFactors % factor == 0)
-                    numWasTrue += 1;
+                for(int index = 0; index < dList.Length; index++)
+                {
+                    if(totalFactors % dList[index] == 0)
+                        numWasTrue[index] += 1;
+                }
             }
 
-            return numWasTrue / ((double)inputSize);
+            double[] density = new double[dList.Length];
+
+            for(int index = 0; index < dList.Length; index++)
+            {
+                density[index] = numWasTrue[index] / (double)inputSize;
+            }
+
+            return density;
         }
+
         public static ulong w(ulong number, uint divisor)
         {
             if(number < 1)
@@ -48,37 +58,6 @@ namespace ResearchProgram
             Func<uint, uint, uint> gcd = null;
             gcd = (a, b) => (b == 0 ? a : gcd(b, a % b));
             return numbers.Aggregate(gcd);
-        }
-
-        public static double[] densityOfUMultiK(ulong inputSize, uint[] divisors, uint[] scale, uint[] factors)
-        {
-            ulong totalFactors = 0;
-            ulong currNumFactors = 0;
-            ulong[] numWasTrue = new ulong[factors.Length];
-
-            for(ulong number = 0; number < inputSize; number++)
-            {
-                for(uint index = 0; index < divisors.Length; index++)
-                {
-                    currNumFactors += w(number, divisors[index]) * scale[index];
-                }
-                totalFactors += currNumFactors;
-
-                for(int index = 0; index < factors.Length; index++)
-                {
-                    if(totalFactors % factors[index] == 0)
-                        numWasTrue[index] += 1;
-                }                
-            }
-
-            double[] density = new double[factors.Length];
-
-            for(int index = 0; index < factors.Length; index++)
-            {
-                density[index] = numWasTrue[index] / (double)inputSize;
-            }
-
-            return density;
         }
     }
 }

@@ -22,13 +22,14 @@ namespace ResearchProgram
         public static DataTable getTable()
         {
             DataTable table = new DataTable("Data");
-            table.Columns.Add("p list", typeof(string));
-            table.Columns.Add("K", typeof(int));
-            table.Columns.Add("{S, k} GCD", typeof(double));
+            table.Columns.Add("Set", typeof(string));
+            table.Columns.Add("d", typeof(int));
+            table.Columns.Add("Little g", typeof(double));
+            table.Columns.Add("Big G", typeof(double));
             table.Columns.Add("Density", typeof(double));
             table.Columns.Add("Formula Result", typeof(double));
             table.Columns.Add("Error", typeof(double));
-            table.Columns.Add("Density * K * gcd(k, 2*S(2), 3*S(3) ... n*S(n))", typeof(double));
+            table.Columns.Add("Density * d * gcd(d, 2*S(2), 3*S(3) ... n*S(n))", typeof(double));
 
             return table;
         }
