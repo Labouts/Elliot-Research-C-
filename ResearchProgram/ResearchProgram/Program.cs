@@ -143,15 +143,15 @@ namespace ResearchProgram
             DataTable dtClose = FileWriter.getTable();
             DataTable dtNotClose = FileWriter.getTable();
 
-            for(int densityListIndex = 0; densityListIndex < setList.Length; densityListIndex++)
+            for(int setListIndex = 0; setListIndex < setList.Length; setListIndex++)
             {
-                double[] density = NumberCruncher.densityOfUMultiD(inputSize, setList[densityListIndex], scaleList[densityListIndex], dList[densityListIndex]);
+                double[] density = NumberCruncher.densityOfUMultiD(inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
 
                 for(int dListIndex = 0; dListIndex < density.Length; dListIndex++)
                 {
-                    uint currentD = dList[densityListIndex][dListIndex];
-                    uint littleGFromFormula = getLittleG(scaleList[densityListIndex], currentD);
-                    uint bigGFromFormula = getBigG(setList[densityListIndex], scaleList[densityListIndex], currentD, littleGFromFormula);
+                    uint currentD = dList[setListIndex][dListIndex];
+                    uint littleGFromFormula = getLittleG(scaleList[setListIndex], currentD);
+                    uint bigGFromFormula = getBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
                     double expectedDensity = getExpectedDensity(bigGFromFormula, littleGFromFormula, currentD, inputSize);
 
                     DataTable table = dtClose;
@@ -162,14 +162,14 @@ namespace ResearchProgram
                     }
                     double mulDivisor = density[dListIndex] * littleGFromFormula * currentD;
 
-                    table.Rows.Add(getArrayNumberString(setList[densityListIndex], scaleList[densityListIndex]),
+                    table.Rows.Add(getArrayNumberString(setList[setListIndex], scaleList[setListIndex]),
                                     currentD,
                                     littleGFromFormula, bigGFromFormula,
                                     density[dListIndex], expectedDensity,
                                     error, mulDivisor);
                 }
 
-                updateProgress(setList[densityListIndex]);
+                updateProgress(setList[setListIndex]);
             }
 
             lock(excelWriteLocder)
