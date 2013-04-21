@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Threading;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace ResearchProgram
 {
@@ -13,160 +15,130 @@ namespace ResearchProgram
         private static int totalToRun = 0;
         private static Dictionary<ulong, Dictionary<ulong, double>> densityCache = new Dictionary<ulong, Dictionary<ulong, double>>();
         private static readonly object excelWriteLocder = new object();
-        private static readonly object updateProgressLocder = new object();
+        private static readonly object updateProgressLocker = new object();
 
         static void Main(string[] args)
         {
-            uint[][] setList1 = new uint[3][];
-            uint[][] scaleList1 = new uint[3][];
-            uint[][] dList1 = new uint[3][];
-
-            setList1[0] = new uint[] { 3 * 5 };
-            scaleList1[0] = new uint[] { 1 };
-            dList1[0] = new uint[] { (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6), (uint)Math.Pow(2, 7),(uint)Math.Pow(3, 8),
-                                          (uint)Math.Pow(5, 2),(uint)Math.Pow(5, 3),(uint)Math.Pow(5, 4),(uint)Math.Pow(5, 5),(uint)Math.Pow(5, 6), (uint)Math.Pow(5, 7),(uint)Math.Pow(5, 8),
-                                          (uint)Math.Pow(3, 2)*(uint)Math.Pow(5, 2),(uint)Math.Pow(3, 3)*(uint)Math.Pow(5, 3),(uint)Math.Pow(3, 4) * (uint)Math.Pow(5, 4),(uint)Math.Pow(3, 2) * (uint)Math.Pow(5, 5), (uint)Math.Pow(3, 2) * (uint)Math.Pow(5, 6), (uint)Math.Pow(3, 3) * (uint)Math.Pow(5, 7), 3 * (uint)Math.Pow(5, 8)};
-
-
-            setList1[1] = new uint[] { 2 * 7 };
-            scaleList1[1] = new uint[] { 1 };
-            dList1[1] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6), (uint)Math.Pow(2, 7),(uint)Math.Pow(2, 8),
-                                          (uint)Math.Pow(7, 2),(uint)Math.Pow(7, 3),(uint)Math.Pow(7, 4),(uint)Math.Pow(7, 5),(uint)Math.Pow(7, 6), (uint)Math.Pow(7, 7),(uint)Math.Pow(7, 8),
-                                          (uint)Math.Pow(2, 2)*(uint)Math.Pow(7, 2),(uint)Math.Pow(2, 3)*(uint)Math.Pow(7, 3),(uint)Math.Pow(2, 4) * (uint)Math.Pow(7, 4),(uint)Math.Pow(2, 2) * (uint)Math.Pow(7, 5), (uint)Math.Pow(2, 2) * (uint)Math.Pow(7, 6), (uint)Math.Pow(2, 3) * (uint)Math.Pow(7, 7), 3 * (uint)Math.Pow(7, 8)};
-
-            setList1[2] = new uint[] { 3 * 7 };
-            scaleList1[2] = new uint[] { 1 };
-            dList1[2] = new uint[] { (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6), (uint)Math.Pow(3, 7),(uint)Math.Pow(3, 8),
-                                          (uint)Math.Pow(7, 2),(uint)Math.Pow(7, 3),(uint)Math.Pow(7, 4),(uint)Math.Pow(7, 5),(uint)Math.Pow(7, 6), (uint)Math.Pow(7, 7),(uint)Math.Pow(7, 8),
-                                          (uint)Math.Pow(3, 2)*(uint)Math.Pow(7, 2),(uint)Math.Pow(3, 3)*(uint)Math.Pow(7, 3),(uint)Math.Pow(3, 4) * (uint)Math.Pow(7, 4),(uint)Math.Pow(3, 2) * (uint)Math.Pow(7, 5), (uint)Math.Pow(3, 2) * (uint)Math.Pow(7, 6), (uint)Math.Pow(3, 3) * (uint)Math.Pow(7, 7), 3 * (uint)Math.Pow(7, 8)};
-
-
-            uint[][] setList2 = new uint[3][];
-            uint[][] scaleList2 = new uint[3][];
-            uint[][] dList2 = new uint[3][];
-
-            setList2[0] = new uint[] { 2 * 5 * 7 };
-            scaleList2[0] = new uint[] { 1 };
-            dList2[0] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6), (uint)Math.Pow(2, 7),(uint)Math.Pow(2, 8),
-                                          (uint)Math.Pow(5, 2),(uint)Math.Pow(5, 3),(uint)Math.Pow(5, 4),(uint)Math.Pow(5, 5),(uint)Math.Pow(5, 6), (uint)Math.Pow(5, 7),(uint)Math.Pow(5, 8),
-                                          (uint)Math.Pow(7, 2),(uint)Math.Pow(7, 3),(uint)Math.Pow(7, 4),(uint)Math.Pow(7, 5),(uint)Math.Pow(7, 6), (uint)Math.Pow(7, 7),(uint)Math.Pow(7, 8),
-                                          (uint)Math.Pow(5, 2)*(uint)Math.Pow(7, 2),(uint)Math.Pow(5, 3)*(uint)Math.Pow(7, 3),(uint)Math.Pow(5, 4) * (uint)Math.Pow(7, 4),(uint)Math.Pow(5, 2) * (uint)Math.Pow(7, 5), (uint)Math.Pow(5, 2) * (uint)Math.Pow(7, 6), (uint)Math.Pow(5, 3) * (uint)Math.Pow(7, 7), 3 * (uint)Math.Pow(7, 8),
-                                          (uint)Math.Pow(2, 2)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(7, 2),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 3)*(uint)Math.Pow(7, 3),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(7, 2), (uint)Math.Pow(2, 4)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(7, 2)};
-
-            setList2[1] = new uint[] { 5 * 7 };
-            scaleList2[1] = new uint[] { 1 };
-            dList2[1] = new uint[] { (uint)Math.Pow(5, 2),(uint)Math.Pow(5, 3),(uint)Math.Pow(5, 4),(uint)Math.Pow(5, 5),(uint)Math.Pow(5, 6), (uint)Math.Pow(5, 7),(uint)Math.Pow(5, 8),
-                                          (uint)Math.Pow(7, 2),(uint)Math.Pow(7, 3),(uint)Math.Pow(7, 4),(uint)Math.Pow(7, 5),(uint)Math.Pow(7, 6), (uint)Math.Pow(7, 7),(uint)Math.Pow(7, 8),
-                                          (uint)Math.Pow(5, 2)*(uint)Math.Pow(7, 2),(uint)Math.Pow(5, 3)*(uint)Math.Pow(7, 3),(uint)Math.Pow(5, 4) * (uint)Math.Pow(7, 4),(uint)Math.Pow(5, 2) * (uint)Math.Pow(7, 5), (uint)Math.Pow(5, 2) * (uint)Math.Pow(7, 6), (uint)Math.Pow(5, 3) * (uint)Math.Pow(7, 7), 3 * (uint)Math.Pow(7, 8)};
-
-
-            setList2[2] = new uint[] { 2, 7 };
-            scaleList2[2] = new uint[] { 5, 3 };
-            dList2[2] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6),
-                                          (uint)Math.Pow(7, 2),(uint)Math.Pow(7, 3),(uint)Math.Pow(7, 4),(uint)Math.Pow(7, 5),(uint)Math.Pow(7, 6)};
-
-
-            uint[][] setList3 = new uint[3][];
-            uint[][] scaleList3 = new uint[3][];
-            uint[][] dList3 = new uint[3][];
-
-            setList3[0] = new uint[] { 12, 14, 16 };
-            scaleList3[0] = new uint[] { 1, 1, 1 };
-            dList3[0] = new uint[] { (uint)Math.Pow(2, 2), (uint)Math.Pow(2, 3), (uint)Math.Pow(2, 4), (uint)Math.Pow(2, 5), (uint)Math.Pow(2, 6), (uint)Math.Pow(2, 7), (uint)Math.Pow(2, 8), (uint)Math.Pow(2, 9), (uint)Math.Pow(2, 10), (uint)Math.Pow(2, 11), (uint)Math.Pow(2, 12), };
-
-            setList3[1] = new uint[] { 2, 3, 5 };
-            scaleList3[1] = new uint[] { 1, 1, 1 };
-            dList3[1] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6), (uint)Math.Pow(2, 7),(uint)Math.Pow(2, 8),
-                                          (uint)Math.Pow(5, 2),(uint)Math.Pow(5, 3),(uint)Math.Pow(5, 4),(uint)Math.Pow(5, 5),(uint)Math.Pow(5, 6), (uint)Math.Pow(5, 7),(uint)Math.Pow(5, 8),
-                                          (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6), (uint)Math.Pow(3, 7),(uint)Math.Pow(3, 8),
-                                          (uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2),(uint)Math.Pow(5, 3)*(uint)Math.Pow(3, 3),(uint)Math.Pow(5, 4) * (uint)Math.Pow(3, 4),(uint)Math.Pow(5, 2) * (uint)Math.Pow(3, 5), (uint)Math.Pow(5, 2) * (uint)Math.Pow(3, 6), (uint)Math.Pow(5, 3) * (uint)Math.Pow(3, 7), 3 * (uint)Math.Pow(3, 8),
-                                          (uint)Math.Pow(2, 2)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 3)*(uint)Math.Pow(3, 3),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2), (uint)Math.Pow(2, 4)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2)};
-
-            setList3[2] = new uint[] { 2, 3, 5 };
-            scaleList3[2] = new uint[] { 7, 11, 7 };
-            dList3[2] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6), (uint)Math.Pow(2, 7),(uint)Math.Pow(2, 8),
-                                          (uint)Math.Pow(5, 2),(uint)Math.Pow(5, 3),(uint)Math.Pow(5, 4),(uint)Math.Pow(5, 5),(uint)Math.Pow(5, 6), (uint)Math.Pow(5, 7),(uint)Math.Pow(5, 8),
-                                          (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6), (uint)Math.Pow(3, 7),(uint)Math.Pow(3, 8),
-                                          (uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2),(uint)Math.Pow(5, 3)*(uint)Math.Pow(3, 3),(uint)Math.Pow(5, 4) * (uint)Math.Pow(3, 4),(uint)Math.Pow(5, 2) * (uint)Math.Pow(3, 5), (uint)Math.Pow(5, 2) * (uint)Math.Pow(3, 6), (uint)Math.Pow(5, 3) * (uint)Math.Pow(3, 7), 3 * (uint)Math.Pow(3, 8),
-                                          (uint)Math.Pow(2, 2)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 3)*(uint)Math.Pow(3, 3),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2), (uint)Math.Pow(2, 4)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2)}; ;
-
-
-            uint[][] setList4 = new uint[3][];
-            uint[][] scaleList4 = new uint[3][];
-            uint[][] dList4 = new uint[3][];
-
-            setList4[0] = new uint[] { 4, 8, 12 };
-            scaleList4[0] = new uint[] { 9, 3, 3 };
-            dList4[0] = new uint[] { (uint)Math.Pow(2, 2), (uint)Math.Pow(2, 3), (uint)Math.Pow(2, 4), (uint)Math.Pow(2, 5), (uint)Math.Pow(2, 6) };
-
-            setList4[1] = new uint[] { 2, 3, 5, 7 };
-            scaleList4[1] = new uint[] { 1, 1, 1, 1 };
-            dList4[1] = new uint[] { (uint)Math.Pow(2, 2) * (uint)Math.Pow(3, 2) * (uint)Math.Pow(5, 2) * (uint)Math.Pow(7, 2),(uint)Math.Pow(2, 2), (uint)Math.Pow(3, 2), (uint)Math.Pow(5, 2), (uint)Math.Pow(7, 2),
-                                          (uint)Math.Pow(2, 2) * (uint)Math.Pow(3, 2), (uint)Math.Pow(2, 2) * (uint)Math.Pow(5, 2), (uint)Math.Pow(2, 2) * (uint)Math.Pow(7, 2), (uint)Math.Pow(3, 2) * (uint)Math.Pow(5, 2),
-                                          (uint)Math.Pow(3, 2) * (uint)Math.Pow(7, 2), (uint)Math.Pow(5, 2) * (uint)Math.Pow(7, 2)};
-
-            setList4[2] = new uint[] { 2, 3, 7 };
-            scaleList4[2] = new uint[] { 3, 5, 3 };
-            dList4[2] = new uint[] { (uint)Math.Pow(2, 2),(uint)Math.Pow(2, 3),(uint)Math.Pow(2, 4),(uint)Math.Pow(2, 5),(uint)Math.Pow(2, 6), (uint)Math.Pow(2, 7),(uint)Math.Pow(2, 8),
-                                          (uint)Math.Pow(5, 2),(uint)Math.Pow(5, 3),(uint)Math.Pow(5, 4),(uint)Math.Pow(5, 5),(uint)Math.Pow(5, 6), (uint)Math.Pow(5, 7),(uint)Math.Pow(5, 8),
-                                          (uint)Math.Pow(3, 2),(uint)Math.Pow(3, 3),(uint)Math.Pow(3, 4),(uint)Math.Pow(3, 5),(uint)Math.Pow(3, 6), (uint)Math.Pow(3, 7),(uint)Math.Pow(3, 8),
-                                          (uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2),(uint)Math.Pow(5, 3)*(uint)Math.Pow(3, 3),(uint)Math.Pow(5, 4) * (uint)Math.Pow(3, 4),(uint)Math.Pow(5, 2) * (uint)Math.Pow(3, 5), (uint)Math.Pow(5, 2) * (uint)Math.Pow(3, 6), (uint)Math.Pow(5, 3) * (uint)Math.Pow(3, 7), 3 * (uint)Math.Pow(3, 8),
-                                          (uint)Math.Pow(2, 2)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 3)*(uint)Math.Pow(3, 3),(uint)Math.Pow(2, 3)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2), (uint)Math.Pow(2, 4)*(uint)Math.Pow(5, 2)*(uint)Math.Pow(3, 2)}; ;
-
-            totalToRun = setList1.Length + setList2.Length + setList3.Length + setList4.Length;
-
-            new Thread(delegate()
-            {
-                multiTest(setList1, scaleList1, dList1, "_2ThreadOne");
-            }).Start();
-
-            new Thread(delegate()
-            {
-                multiTest(setList2, scaleList2, dList2, "_2ThreadTwo");
-            }).Start();
-
-            new Thread(delegate()
-            {
-                multiTest(setList3, scaleList3, dList3, "_2ThreadThree");
-            }).Start();
-
-            new Thread(delegate()
-            {
-                multiTest(setList4, scaleList4, dList4, "_2ThreadFour");
-            }).Start();
-
+            readFileAndRun("ThreadOneInput.txt", "ThreadOne");
+            readFileAndRun("ThreadTwoInput.txt", "ThreadTwo");
+            readFileAndRun("ThreadThreeInput.txt", "ThreadThree");
+            readFileAndRun("ThreadFourInput.txt", "ThreadFour");
         }
 
-        static void multiTest(uint[][] setList, uint[][] scaleList, uint[][] dList, string toAppendToFile)
+        static void readFileAndRun(String fileName, String toAppend)
         {
-            ulong inputSize = 100000;
-            DataTable dtClose = FileWriter.getTable();
-            DataTable dtNotClose = FileWriter.getTable();
+            List<uint[]> setList = new List<uint[]>();
+            List<uint[]> scaleList = new List<uint[]>();
+            List<uint[]> dList = new List<uint[]>();
 
-            for(int setListIndex = 0; setListIndex < setList.Length; setListIndex++)
+            Regex reg = new Regex(" +");
+
+            ulong inputSize = 0;
+            using(TextReader reader = File.OpenText(fileName))
             {
-                double[] density = NumberCruncher.densityOfUMultiD(inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
+                string line = getNextNonEmptyLine(reader);
+                inputSize = uint.Parse(line.Split()[1]);
+                line = getNextNonEmptyLine(reader);
+                while(line != null)
+                {
+                    string[] numbers = reg.Split(line);
+                    setList.Add(lineToArray(numbers));
+
+                    line = getNextNonEmptyLine(reader);
+                    numbers = reg.Split(line);
+                    scaleList.Add(lineToArray(numbers));
+
+                    line = getNextNonEmptyLine(reader);
+                    numbers = reg.Split(line);
+                    dList.Add(lineToArray(numbers));
+
+                    line = getNextNonEmptyLine(reader);
+                }
+            }
+            lock(updateProgressLocker)
+            {
+                totalToRun += setList.Count;
+            }
+            new Thread(delegate()
+            {
+                multiTest(inputSize, setList, scaleList, dList, toAppend);
+            }).Start();
+        }
+
+        private static string getNextNonEmptyLine(TextReader reader)
+        {
+            string line = "";
+            while(line != null && line == "")
+            {
+                line = reader.ReadLine();
+            }
+
+            if(line != null)
+            {
+                line = line.TrimEnd(' ');
+                line = line.TrimStart(' ');
+                line = line.Replace(",", " ");
+            }
+
+            return line;
+        }
+
+        private static uint[] lineToArray(string[] numbers)
+        {
+            uint[] numArray = new uint[numbers.Length - 1];
+
+            for(int index = 0; index < numArray.Length; index++)
+            {
+                numArray[index] = uint.Parse(numbers[index + 1]);
+            }
+
+            return numArray;
+        }
+
+        static void multiTest(ulong inputSize, List<uint[]> setList, List<uint[]> scaleList, List<uint[]> dList, string toAppendToFile)
+        {
+            Console.Out.WriteLine("Starting " + toAppendToFile);
+            DataTable table = FileWriter.getTable();
+
+            for(int setListIndex = 0; setListIndex < setList.Count; setListIndex++)
+            {
+                double[] density = NumberCruncher.densityOfUMultiD(toAppendToFile + " set #" + (setListIndex+1), inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
 
                 for(int dListIndex = 0; dListIndex < density.Length; dListIndex++)
                 {
                     uint currentD = dList[setListIndex][dListIndex];
                     uint littleGFromFormula = getLittleG(scaleList[setListIndex], currentD);
                     uint bigGFromFormula = getBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
-                    double expectedDensity = getExpectedDensity(bigGFromFormula, littleGFromFormula, currentD, inputSize);
+                    uint oldBigGFromFormula = getOldBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
+                    double formulaOneSum = getFormulaOneSum(scaleList[setListIndex], setList[setListIndex], dList[setListIndex][dListIndex]);
+                    double formulaOne = getFormulaOne(scaleList[setListIndex], setList[setListIndex], dList[setListIndex][dListIndex]);
+                    double formulaTwo = getFormulaThree(toAppendToFile + " Formula Two Calculation set #" + (setListIndex+1) + " d#" + (dListIndex+1), oldBigGFromFormula, littleGFromFormula, currentD, inputSize);
+                    double formulaThree = getFormulaThree(toAppendToFile + " Formula Three Calculation set #" + (setListIndex+1) + " d#" + (dListIndex+1), bigGFromFormula, littleGFromFormula, currentD, inputSize);
 
-                    DataTable table = dtClose;
-                    double error = Math.Abs((expectedDensity - density[dListIndex]) / density[dListIndex]);
-                    if(error > 0.06)
+                    double errorOne = Math.Abs(formulaOne - density[dListIndex]) / density[dListIndex];
+                    double errorTwo = Math.Abs(formulaTwo - density[dListIndex]) / density[dListIndex];
+                    double errorThree = Math.Abs(formulaThree - density[dListIndex]) / density[dListIndex];
+
+                    string winner;
+
+                    if(errorOne < errorTwo && errorOne < errorThree)
                     {
-                        table = dtNotClose;
+                        winner = "Formula One";
                     }
-                    double mulDivisor = density[dListIndex] * littleGFromFormula * currentD;
+                    else if(errorTwo < errorThree)
+                    {
+                        winner = "Formula Two";
+                    }
+                    else
+                    {
+                        winner = "Formula Three";
+                    }
 
                     table.Rows.Add(getArrayNumberString(setList[setListIndex], scaleList[setListIndex]),
                                     currentD,
-                                    littleGFromFormula, bigGFromFormula,
-                                    density[dListIndex], expectedDensity,
-                                    error, mulDivisor);
+                                    littleGFromFormula, oldBigGFromFormula, bigGFromFormula, formulaOneSum,
+                                    density[dListIndex], formulaOne, formulaTwo, formulaThree,
+                                    errorOne, errorTwo, errorThree, winner);
                 }
 
                 updateProgress(setList[setListIndex]);
@@ -174,17 +146,23 @@ namespace ResearchProgram
 
             lock(excelWriteLocder)
             {
-                FileWriter.saveTable("CommonFactor_April_13_Close" + toAppendToFile + ".xlsx", dtClose);
-                FileWriter.saveTable("CommonFactor_April_13_NotClose" + toAppendToFile + ".xlsx", dtNotClose);
+                string fileName = DateTime.Now.ToString() + toAppendToFile + ".xlsx";
+                fileName = fileName.Replace('/', '-');
+                fileName = fileName.Replace(':', '_');
+                fileName = fileName.Trim();
+                fileName = "data/" + fileName;
+                FileWriter.saveTable(fileName, table);
             }
+
+            Console.Out.WriteLine(toAppendToFile + " Completed");
         }
 
         static uint getLittleG(uint[] scales, uint d)
         {
             uint[] gcdTwoArray = new uint[scales.Length + 1];
-            for(int gcdindex = 0; gcdindex < scales.Length; gcdindex++)
+            for(int gcdIndex = 0; gcdIndex < scales.Length; gcdIndex++)
             {
-                gcdTwoArray[gcdindex] = scales[gcdindex];
+                gcdTwoArray[gcdIndex] = scales[gcdIndex];
             }
             gcdTwoArray[scales.Length] = d;
 
@@ -192,6 +170,17 @@ namespace ResearchProgram
         }
 
         static uint getBigG(uint[] set, uint[] scales, uint d, uint littleG)
+        {
+            uint[] gcdSet = new uint[scales.Length];
+            for(int gcdIndex = 0; gcdIndex < scales.Length; gcdIndex++)
+            {
+                gcdSet[gcdIndex] = set[gcdIndex] * (scales[gcdIndex] % d);
+            }
+
+            return NumberCruncher.GCD(gcdSet) / littleG;
+        }
+
+        static uint getOldBigG(uint[] set, uint[] scales, uint d, uint littleG)
         {
             uint[] gcdSet = new uint[scales.Length + 1];
             for(int gcdIndex = 0; gcdIndex < scales.Length; gcdIndex++)
@@ -203,8 +192,36 @@ namespace ResearchProgram
 
             return NumberCruncher.GCD(gcdSet) / littleG;
         }
+        public static double getFormulaOneSum(uint[] setList, uint[] scaleList, uint d)
+        {
+            uint littleGFromFormula = getLittleG(scaleList, d);
+            uint bigGFromFomula = getOldBigG(setList, scaleList, d, littleGFromFormula);
+            uint formulaSum = 0;
 
-        private static double getExpectedDensity(uint bigG, uint littleG, uint d, ulong inputSize)
+            for(uint sumIndex = 1; sumIndex < bigGFromFomula + 1; sumIndex++)
+            {
+                uint[] tempArray = { sumIndex, bigGFromFomula };
+                formulaSum += NumberCruncher.GCD(tempArray);
+            }
+
+            return formulaSum;
+        }
+
+        public static double getFormulaOne(uint[] setList, uint[] scaleList, uint d)
+        {
+            uint littleGFromFormula = getLittleG(scaleList, d);
+            uint bigGFromFomula = getOldBigG(setList, scaleList, d, littleGFromFormula);
+            uint formulaSum = 0;
+
+            for(uint sumIndex = 1; sumIndex < bigGFromFomula + 1; sumIndex++)
+            {
+                uint[] tempArray = { sumIndex, bigGFromFomula };
+                formulaSum += NumberCruncher.GCD(tempArray);
+            }
+
+            return littleGFromFormula / (double)(d * bigGFromFomula) * formulaSum;
+        }
+        private static double getFormulaThree(string id, uint bigG, uint littleG, uint d, ulong inputSize)
         {
             uint[] formDivisor = { bigG };
             uint[] formScale = { 1 };
@@ -213,7 +230,7 @@ namespace ResearchProgram
             double expectedDensity;
             if(formFactor[0] == 1 || formDivisor[0] == 1)
             {
-                expectedDensity = 1;
+                expectedDensity = 1 / (double)d;
             }
             else
             {
@@ -225,7 +242,7 @@ namespace ResearchProgram
                     }
                     if(!densityCache[formDivisor[0]].ContainsKey(formFactor[0]))
                     {
-                        densityCache[formDivisor[0]].Add(formFactor[0], NumberCruncher.densityOfUMultiD(inputSize, formDivisor, formScale, formFactor)[0]);
+                        densityCache[formDivisor[0]].Add(formFactor[0], NumberCruncher.densityOfUMultiD(id, inputSize, formDivisor, formScale, formFactor)[0]);
                     }
                     expectedDensity = densityCache[formDivisor[0]][formFactor[0]];
                 }
@@ -236,11 +253,11 @@ namespace ResearchProgram
 
         private static void updateProgress(uint[] setList)
         {
-            lock(updateProgressLocder)
+            lock(updateProgressLocker)
             {
                 numDone++;
             }
-
+            Console.Out.WriteLine(numDone + " of " + totalToRun + "Completed");
             Console.Out.WriteLine(100 * numDone / totalToRun + "% done\n");
         }
 
@@ -295,3 +312,4 @@ namespace ResearchProgram
         }
     }
 }
+

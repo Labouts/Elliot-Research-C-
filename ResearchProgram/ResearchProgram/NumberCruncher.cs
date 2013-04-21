@@ -8,11 +8,14 @@ namespace ResearchProgram
 {
     static class NumberCruncher
     {
-        public static double[] densityOfUMultiD(ulong inputSize, uint[] set, uint[] scale, uint[] dList)
+        public static double[] densityOfUMultiD(string id, ulong inputSize, uint[] set, uint[] scale, uint[] dList)
         {
             ulong totalFactors = 0;
             ulong currNumFactors = 0;
             ulong[] numWasTrue = new ulong[dList.Length];
+
+            uint betweenPrint = 100000000;
+            uint tillPrint = betweenPrint;
 
             for(ulong number = 0; number < inputSize; number++)
             {
@@ -26,6 +29,14 @@ namespace ResearchProgram
                 {
                     if(totalFactors % dList[index] == 0)
                         numWasTrue[index] += 1;
+                }
+
+                tillPrint--;
+
+                if(tillPrint <= 0)
+                {
+                    tillPrint = betweenPrint;
+                    Console.Out.WriteLine(id + " is " + number / (double)inputSize * 100 + "% done");
                 }
             }
 
