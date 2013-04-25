@@ -150,7 +150,7 @@ namespace ResearchProgram
                 fileName = fileName.Replace('/', '-');
                 fileName = fileName.Replace(':', '_');
                 fileName = fileName.Trim();
-                fileName = "data/" + fileName;
+                fileName = "data/" + fileName + "_inputSize:" + inputSize.ToString( );
                 FileWriter.saveTable(fileName, table);
             }
 
