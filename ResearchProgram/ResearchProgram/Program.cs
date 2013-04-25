@@ -31,61 +31,71 @@ namespace ResearchProgram
         {
             Regex reg = new Regex(" +");
 
-            uint[][][] setList;
-            uint[][][] scaleList;
-            uint[][] dList;
+            uint[][][] setList = null;
+            uint[][][] scaleList = null;
+            uint[][] dList = null;
 
             ulong inputSize = 0;
+            bool run;
             using(TextReader reader = File.OpenText(fileName))
             {
                 string line = getNextNonEmptyLine(reader);
-                inputSize = ulong.Parse(line.Split()[1]);
-                line = getNextNonEmptyLine(reader);
-                uint numSets = uint.Parse(line.Split()[1]);
+                run = line == "y";
 
-                setList = new uint[numSets][][];
-                scaleList = new uint[numSets][][];
-                dList = new uint[numSets][];
-
-                line = getNextNonEmptyLine(reader);
-                for(int index = 0; index < numSets; index++)
+                if (run)
                 {
-                    setList[index] = new uint[2][];
-                    scaleList[index] = new uint[2][];
-                    dList[index] = new uint[2];
+                    line = getNextNonEmptyLine(reader);
+                    inputSize = ulong.Parse(line.Split()[1]);
+                    line = getNextNonEmptyLine(reader);
+                    uint numSets = uint.Parse(line.Split()[1]);
 
-                    string[] numbers = reg.Split(line);
-                    setList[index][0] = lineToArray(numbers);
+                    setList = new uint[numSets][][];
+                    scaleList = new uint[numSets][][];
+                    dList = new uint[numSets][];
 
                     line = getNextNonEmptyLine(reader);
-                    numbers = reg.Split(line);
-                    scaleList[index][0] = lineToArray(numbers);
+                    for (int index = 0; index < numSets; index++)
+                    {
+                        setList[index] = new uint[2][];
+                        scaleList[index] = new uint[2][];
+                        dList[index] = new uint[2];
 
-                    line = getNextNonEmptyLine(reader);
-                    dList[index][0] = uint.Parse(line.Split()[1]);
+                        string[] numbers = reg.Split(line);
+                        setList[index][0] = lineToArray(numbers);
 
-                    line = getNextNonEmptyLine(reader);
-                    numbers = reg.Split(line);
-                    setList[index][1] = lineToArray(numbers);
+                        line = getNextNonEmptyLine(reader);
+                        numbers = reg.Split(line);
+                        scaleList[index][0] = lineToArray(numbers);
 
-                    line = getNextNonEmptyLine(reader);
-                    numbers = reg.Split(line);
-                    scaleList[index][1] = lineToArray(numbers);
+                        line = getNextNonEmptyLine(reader);
+                        dList[index][0] = uint.Parse(line.Split()[1]);
 
-                    line = getNextNonEmptyLine(reader);
-                    dList[index][1] = uint.Parse(line.Split()[1]);         
+                        line = getNextNonEmptyLine(reader);
+                        numbers = reg.Split(line);
+                        setList[index][1] = lineToArray(numbers);
 
-                    line = getNextNonEmptyLine(reader);
+                        line = getNextNonEmptyLine(reader);
+                        numbers = reg.Split(line);
+                        scaleList[index][1] = lineToArray(numbers);
+
+                        line = getNextNonEmptyLine(reader);
+                        dList[index][1] = uint.Parse(line.Split()[1]);
+
+                        line = getNextNonEmptyLine(reader);
+                    }
                 }
             }
-            lock(updateProgressLocker)
+            if (run)
             {
-                totalToRun += setList.Length;
+                lock (updateProgressLocker)
+                {
+                    totalToRun += setList.Length;
+                }
+                new Thread(delegate()
+                {
+                    multiSetTest(inputSize, setList, scaleList, dList, toAppend);
+                }).Start();
             }
-            new Thread(delegate()
-            {
-                multiSetTest(inputSize, setList, scaleList, dList, toAppend);
-            }).Start();
         }
 
         private static string getNextNonEmptyLine(TextReader reader)
@@ -203,7 +213,7 @@ namespace ResearchProgram
                 fileName = fileName.Replace('/', '-');
                 fileName = fileName.Replace(':', '_');
                 fileName = fileName.Trim();
-                fileName = "data/" + fileName;
+                fileName = "data/" + fileName + "_InputSize=" + inputSize.ToString( );
                 FileWriter.saveTable(fileName, table);
             }
 
