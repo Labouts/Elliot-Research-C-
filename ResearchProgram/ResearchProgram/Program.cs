@@ -33,36 +33,45 @@ namespace ResearchProgram
 
             Regex reg = new Regex(" +");
 
+            bool run;
             ulong inputSize = 0;
             using(TextReader reader = File.OpenText(fileName))
             {
                 string line = getNextNonEmptyLine(reader);
-                inputSize = ulong.Parse(line.Split()[1]);
-                line = getNextNonEmptyLine(reader);
-                while(line != null)
+                run = line[0] == 'y';
+                if (run)
                 {
-                    string[] numbers = reg.Split(line);
-                    setList.Add(lineToArray(numbers));
-
                     line = getNextNonEmptyLine(reader);
-                    numbers = reg.Split(line);
-                    scaleList.Add(lineToArray(numbers));
-
+                    inputSize = ulong.Parse(line.Split()[1]);
                     line = getNextNonEmptyLine(reader);
-                    numbers = reg.Split(line);
-                    dList.Add(lineToArray(numbers));
+                    while (line != null)
+                    {
+                        string[] numbers = reg.Split(line);
+                        setList.Add(lineToArray(numbers));
 
-                    line = getNextNonEmptyLine(reader);
+                        line = getNextNonEmptyLine(reader);
+                        numbers = reg.Split(line);
+                        scaleList.Add(lineToArray(numbers));
+
+                        line = getNextNonEmptyLine(reader);
+                        numbers = reg.Split(line);
+                        dList.Add(lineToArray(numbers));
+
+                        line = getNextNonEmptyLine(reader);
+                    }
                 }
             }
-            lock(updateProgressLocker)
+            if (run)
             {
-                totalToRun += setList.Count;
+                lock (updateProgressLocker)
+                {
+                    totalToRun += setList.Count;
+                }
+                new Thread(delegate()
+                {
+                    multiTest(inputSize, setList, scaleList, dList, toAppend);
+                }).Start();
             }
-            new Thread(delegate()
-            {
-                multiTest(inputSize, setList, scaleList, dList, toAppend);
-            }).Start();
         }
 
         private static string getNextNonEmptyLine(TextReader reader)
