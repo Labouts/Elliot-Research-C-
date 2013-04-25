@@ -209,11 +209,11 @@ namespace ResearchProgram
 
             lock(excelWriteLocder)
             {
-                string fileName = DateTime.Now.ToString() + toAppendToFile + ".xlsx";
+                string fileName = DateTime.Now.ToString() + toAppendToFile;
                 fileName = fileName.Replace('/', '-');
                 fileName = fileName.Replace(':', '_');
                 fileName = fileName.Trim();
-                fileName = "data/" + fileName + "_InputSize=" + inputSize.ToString( );
+                fileName = "data/" + fileName + "_InputSize=" + inputSize.ToString( ) + ".xlsx";
                 FileWriter.saveTable(fileName, table);
             }
 
