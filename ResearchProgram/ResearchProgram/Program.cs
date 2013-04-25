@@ -19,19 +19,21 @@ namespace ResearchProgram
 
         static void Main(string[] args)
         {
-            readFileAndRun("ThreadOneInput.txt", "ThreadOne");
-            readFileAndRun("ThreadTwoInput.txt", "ThreadTwo");
-            readFileAndRun("ThreadThreeInput.txt", "ThreadThree");
-            readFileAndRun("ThreadFourInput.txt", "ThreadFour");
+            multiReadFileAndRun("ThreadOneInput.txt", "ThreadOne");
+            multiReadFileAndRun("ThreadTwoInput.txt", "ThreadTwo");
+            multiReadFileAndRun("ThreadThreeInput.txt", "ThreadThree");
+            multiReadFileAndRun("ThreadFourInput.txt", "ThreadFour");
         }
 
-        static void readFileAndRun(String fileName, String toAppend)
-        {
-            List<uint[]> setList = new List<uint[]>();
-            List<uint[]> scaleList = new List<uint[]>();
-            List<uint[]> dList = new List<uint[]>();
 
+
+        static void multiReadFileAndRun(String fileName, String toAppend)
+        {
             Regex reg = new Regex(" +");
+
+            uint[][][] setList;
+            uint[][][] scaleList;
+            uint[][] dList;
 
             ulong inputSize = 0;
             using(TextReader reader = File.OpenText(fileName))
@@ -39,29 +41,50 @@ namespace ResearchProgram
                 string line = getNextNonEmptyLine(reader);
                 inputSize = uint.Parse(line.Split()[1]);
                 line = getNextNonEmptyLine(reader);
-                while(line != null)
+                uint numSets = uint.Parse(line.Split()[1]);
+
+                setList = new uint[numSets][][];
+                scaleList = new uint[numSets][][];
+                dList = new uint[numSets][];
+
+                line = getNextNonEmptyLine(reader);
+                for(int index = 0; index < numSets; index++)
                 {
+                    setList[index] = new uint[2][];
+                    scaleList[index] = new uint[2][];
+                    dList[index] = new uint[2];
+
                     string[] numbers = reg.Split(line);
-                    setList.Add(lineToArray(numbers));
+                    setList[index][0] = lineToArray(numbers);
 
                     line = getNextNonEmptyLine(reader);
                     numbers = reg.Split(line);
-                    scaleList.Add(lineToArray(numbers));
+                    scaleList[index][0] = lineToArray(numbers);
+
+                    line = getNextNonEmptyLine(reader);
+                    dList[index][0] = uint.Parse(line.Split()[1]);
 
                     line = getNextNonEmptyLine(reader);
                     numbers = reg.Split(line);
-                    dList.Add(lineToArray(numbers));
+                    setList[index][1] = lineToArray(numbers);
+
+                    line = getNextNonEmptyLine(reader);
+                    numbers = reg.Split(line);
+                    scaleList[index][1] = lineToArray(numbers);
+
+                    line = getNextNonEmptyLine(reader);
+                    dList[index][1] = uint.Parse(line.Split()[1]);         
 
                     line = getNextNonEmptyLine(reader);
                 }
             }
             lock(updateProgressLocker)
             {
-                totalToRun += setList.Count;
+                totalToRun += setList.Length;
             }
             new Thread(delegate()
             {
-                multiTest(inputSize, setList, scaleList, dList, toAppend);
+                multiSetTest(inputSize, setList, scaleList, dList, toAppend);
             }).Start();
         }
 
@@ -102,7 +125,7 @@ namespace ResearchProgram
 
             for(int setListIndex = 0; setListIndex < setList.Count; setListIndex++)
             {
-                double[] density = NumberCruncher.densityOfUMultiD(toAppendToFile + " set #" + (setListIndex+1), inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
+                double[] density = NumberCruncher.densityOfUMultiD(toAppendToFile + " set #" + (setListIndex + 1), inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
 
                 for(int dListIndex = 0; dListIndex < density.Length; dListIndex++)
                 {
@@ -112,8 +135,8 @@ namespace ResearchProgram
                     uint oldBigGFromFormula = getOldBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
                     double formulaOneSum = getFormulaOneSum(scaleList[setListIndex], setList[setListIndex], dList[setListIndex][dListIndex]);
                     double formulaOne = getFormulaOne(scaleList[setListIndex], setList[setListIndex], dList[setListIndex][dListIndex]);
-                    double formulaTwo = getFormulaThree(toAppendToFile + " Formula Two Calculation set #" + (setListIndex+1) + " d#" + (dListIndex+1), oldBigGFromFormula, littleGFromFormula, currentD, inputSize);
-                    double formulaThree = getFormulaThree(toAppendToFile + " Formula Three Calculation set #" + (setListIndex+1) + " d#" + (dListIndex+1), bigGFromFormula, littleGFromFormula, currentD, inputSize);
+                    double formulaTwo = getFormulaThree(toAppendToFile + " Formula Two Calculation set #" + (setListIndex + 1) + " d#" + (dListIndex + 1), oldBigGFromFormula, littleGFromFormula, currentD, inputSize);
+                    double formulaThree = getFormulaThree(toAppendToFile + " Formula Three Calculation set #" + (setListIndex + 1) + " d#" + (dListIndex + 1), bigGFromFormula, littleGFromFormula, currentD, inputSize);
 
                     double errorOne = Math.Abs(formulaOne - density[dListIndex]) / density[dListIndex];
                     double errorTwo = Math.Abs(formulaTwo - density[dListIndex]) / density[dListIndex];
@@ -141,7 +164,37 @@ namespace ResearchProgram
                                     errorOne, errorTwo, errorThree, winner);
                 }
 
-                updateProgress(setList[setListIndex]);
+                updateProgress();
+            }
+        }
+
+        static void multiSetTest(ulong inputSize, uint[][][] setList, uint[][][] scaleList, uint[][] dList, string toAppendToFile)
+        {
+            Console.Out.WriteLine("Starting " + toAppendToFile);
+
+            DataTable table = new DataTable("Data");
+
+            table.Columns.Add("Set #1", typeof(string));
+            table.Columns.Add("d #1", typeof(double));
+            table.Columns.Add("Density #1", typeof(double));
+            table.Columns.Add("Set #2", typeof(string));
+            table.Columns.Add("d #2", typeof(double));
+            table.Columns.Add("Density #2", typeof(double));
+            table.Columns.Add("Multiple Multiset Density", typeof(double));
+            table.Columns.Add("Product of Density #1 and Density #2", typeof(double));
+            table.Columns.Add("Error", typeof(double));
+
+            for(int setListIndex = 0; setListIndex < setList.Length; setListIndex++)
+            {
+                double[] density = NumberCruncher.densityOfUMultipleSets(toAppendToFile + " set #" + (setListIndex + 1), inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
+
+
+
+                table.Rows.Add(getArrayNumberString(setList[setListIndex][0], scaleList[setListIndex][0]), dList[setListIndex][0], density[0],
+                               getArrayNumberString(setList[setListIndex][1], scaleList[setListIndex][1]), dList[setListIndex][0], density[1],
+                               density[2], density[0]*density[1], Math.Abs(density[0]*density[1] - density[2])/density[0]*density[1]);
+
+                updateProgress();
             }
 
             lock(excelWriteLocder)
@@ -251,7 +304,7 @@ namespace ResearchProgram
             return expectedDensity;
         }
 
-        private static void updateProgress(uint[] setList)
+        private static void updateProgress()
         {
             lock(updateProgressLocker)
             {
