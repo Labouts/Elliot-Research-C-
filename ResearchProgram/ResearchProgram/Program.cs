@@ -39,7 +39,7 @@ namespace ResearchProgram
             using(TextReader reader = File.OpenText(fileName))
             {
                 string line = getNextNonEmptyLine(reader);
-                inputSize = uint.Parse(line.Split()[1]);
+                inputSize = ulong.Parse(line.Split()[1]);
                 line = getNextNonEmptyLine(reader);
                 uint numSets = uint.Parse(line.Split()[1]);
 
