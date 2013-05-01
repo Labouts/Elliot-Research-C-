@@ -119,8 +119,8 @@ namespace ResearchProgram
                     uint littleGFromFormula = getLittleG(scaleList[setListIndex], currentD);
                     uint bigGFromFormula = getBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
                     uint oldBigGFromFormula = getOldBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
-                    double formulaOneSum = getFormulaOneSum(scaleList[setListIndex], setList[setListIndex], dList[setListIndex][dListIndex]);
-                    double formulaOne = getFormulaOne(scaleList[setListIndex], setList[setListIndex], dList[setListIndex][dListIndex]);
+                    double formulaOneSum = getFormulaOneSum(setList[setListIndex], scaleList[setListIndex], dList[setListIndex][dListIndex]);
+                    double formulaOne = getFormulaOne(setList[setListIndex], scaleList[setListIndex], dList[setListIndex][dListIndex]);
                     double formulaTwo = getFormulaThree(toAppendToFile + " Formula Two Calculation set #" + (setListIndex+1) + " d#" + (dListIndex+1), oldBigGFromFormula, littleGFromFormula, currentD, inputSize);
                     double formulaThree = getFormulaThree(toAppendToFile + " Formula Three Calculation set #" + (setListIndex+1) + " d#" + (dListIndex+1), bigGFromFormula, littleGFromFormula, currentD, inputSize);
 
