@@ -54,11 +54,11 @@ namespace ResearchProgram
                     dList = new uint[numSets][];
 
                     line = getNextNonEmptyLine(reader);
-                    for (int index = 0; index < numSets; index++)
+                    for (int index = 0; index < numSets && line != null; index++)
                     {
-                        setList[index] = new uint[2][];
-                        scaleList[index] = new uint[2][];
-                        dList[index] = new uint[2];
+                        setList[index] = new uint[3][];
+                        scaleList[index] = new uint[3][];
+                        dList[index] = new uint[3];
 
                         string[] numbers = reg.Split(line);
                         setList[index][0] = lineToArray(numbers);
@@ -80,6 +80,17 @@ namespace ResearchProgram
 
                         line = getNextNonEmptyLine(reader);
                         dList[index][1] = uint.Parse(line.Split()[1]);
+
+                        line = getNextNonEmptyLine(reader);
+                        numbers = reg.Split(line);
+                        setList[index][2] = lineToArray(numbers);
+
+                        line = getNextNonEmptyLine(reader);
+                        numbers = reg.Split(line);
+                        scaleList[index][2] = lineToArray(numbers);
+
+                        line = getNextNonEmptyLine(reader);
+                        dList[index][2] = uint.Parse(line.Split()[1]);
 
                         line = getNextNonEmptyLine(reader);
                     }
@@ -190,8 +201,11 @@ namespace ResearchProgram
             table.Columns.Add("Set #2", typeof(string));
             table.Columns.Add("d #2", typeof(double));
             table.Columns.Add("Density #2", typeof(double));
+            table.Columns.Add("Set #3", typeof(string));
+            table.Columns.Add("d #3", typeof(double));
+            table.Columns.Add("Density #3", typeof(double));
             table.Columns.Add("Multiple Multiset Density", typeof(double));
-            table.Columns.Add("Product of Density #1 and Density #2", typeof(double));
+            table.Columns.Add("Product of Density #1, #2, #3", typeof(double));
             table.Columns.Add("Error", typeof(double));
 
             for(int setListIndex = 0; setListIndex < setList.Length; setListIndex++)
@@ -199,10 +213,10 @@ namespace ResearchProgram
                 double[] density = NumberCruncher.densityOfUMultipleSets(toAppendToFile + " set #" + (setListIndex + 1), inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
 
 
-
                 table.Rows.Add(getArrayNumberString(setList[setListIndex][0], scaleList[setListIndex][0]), dList[setListIndex][0], density[0],
-                               getArrayNumberString(setList[setListIndex][1], scaleList[setListIndex][1]), dList[setListIndex][0], density[1],
-                               density[2], density[0]*density[1], Math.Abs(density[0]*density[1] - density[2])/density[0]*density[1]);
+                               getArrayNumberString(setList[setListIndex][1], scaleList[setListIndex][1]), dList[setListIndex][1], density[1],
+                               getArrayNumberString(setList[setListIndex][2], scaleList[setListIndex][2]), dList[setListIndex][2], density[2],
+                               density[2], density[0] * density[1] * density[2], Math.Abs(density[0] * density[1] * density[2] - density[3]) / density[3]);
 
                 updateProgress();
             }
