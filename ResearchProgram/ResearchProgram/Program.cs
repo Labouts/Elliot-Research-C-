@@ -216,7 +216,7 @@ namespace ResearchProgram
                 table.Rows.Add(getArrayNumberString(setList[setListIndex][0], scaleList[setListIndex][0]), dList[setListIndex][0], density[0],
                                getArrayNumberString(setList[setListIndex][1], scaleList[setListIndex][1]), dList[setListIndex][1], density[1],
                                getArrayNumberString(setList[setListIndex][2], scaleList[setListIndex][2]), dList[setListIndex][2], density[2],
-                               density[2], density[0] * density[1] * density[2], Math.Abs(density[0] * density[1] * density[2] - density[3]) / density[3]);
+                               density[3], density[0] * density[1] * density[2], Math.Abs(density[0] * density[1] * density[2] - density[3]) / density[3]);
 
                 updateProgress();
             }
