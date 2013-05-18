@@ -27,12 +27,33 @@ namespace ResearchProgram
             table.Columns.Add("H = GCD( d, 2*S'(2), 3*S'(3), ... n*S'(n))", typeof(double));
             table.Columns.Add("Density", typeof(double));
             table.Columns.Add("density*d*H", typeof(double));
-            
+
 
             return table;
         }
 
-                public static DataTable getMultiTable()
+        public static DataTable getSingleTable()
+        {
+            DataTable table = new DataTable("Data");
+            table.Columns.Add("Set", typeof(string));
+            table.Columns.Add("d", typeof(int));
+            table.Columns.Add("g = GCD( d, S(2), S(3), ... S(n))", typeof(double));
+            table.Columns.Add("H = GCD( d, 2*S'(2), 3*S'(3), ... n*S'(n))", typeof(double));
+            table.Columns.Add("G = GCD( 2*S'(2), 3*S'(3), ... n*S'(n))", typeof(double));
+            table.Columns.Add("Sum[i=1 to i=H] GCD(i, H)", typeof(double));
+            table.Columns.Add("Density", typeof(double));
+            table.Columns.Add("Formula 1", typeof(double));
+            table.Columns.Add("Formula 2", typeof(double));
+            table.Columns.Add("Formula 3", typeof(double));
+            table.Columns.Add("Formula 1 Error", typeof(double));
+            table.Columns.Add("Formula 2 Error", typeof(double));
+            table.Columns.Add("Formula 3 Error", typeof(double));
+            table.Columns.Add("Best Match", typeof(string));
+
+            return table;
+        }
+
+        public static DataTable getMultiTable()
         {
             DataTable table = new DataTable("Data");
             table.Columns.Add("Set", typeof(string));
@@ -40,7 +61,6 @@ namespace ResearchProgram
             table.Columns.Add("H = GCD( d, 2*S'(2), 3*S'(3), ... n*S'(n))", typeof(double));
             table.Columns.Add("Density", typeof(double));
             table.Columns.Add("density*d*H", typeof(double));
-            
 
             return table;
         }

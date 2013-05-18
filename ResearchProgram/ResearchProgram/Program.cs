@@ -17,13 +17,14 @@ namespace ResearchProgram
         private static readonly object excelWriteLocder = new object();
         private static readonly object updateProgressLocker = new object();
 
+        [STAThread]
         static void Main(string[] args)
         {
             int choice = 0;
             while(choice < 1 || choice > 3)
             {
                 Console.Out.WriteLine("Which version do you want to run?\n1. Simple Single \n2. Complex Single \n3. Multiple Sets");
-                choice = Console.In.Read();
+                choice = Console.In.ReadLine()[0] - '0';
                 if(choice < 1 || choice > 3)
                 {
                     Console.Out.WriteLine("Invalid Choice");
@@ -31,8 +32,7 @@ namespace ResearchProgram
             }
 
             Console.Out.WriteLine("How many threads do you want to run?");
-            int numThreads = Console.In.Read();
-
+            int numThreads = Console.In.ReadLine()[0] - '0';
             switch(choice)
             {
                 case 1:
@@ -40,7 +40,8 @@ namespace ResearchProgram
                     {
                         OpenFileDialog openFileDialog = new OpenFileDialog();
                         openFileDialog.ShowDialog();
-                        simpleReadFileAndRun(openFileDialog.FileName, "Thread" + (count + 1));
+                        if(openFileDialog.SafeFileNames.Length > 0)
+                            simpleReadFileAndRun(openFileDialog.FileName, "Thread" + (count + 1));
                     }
                     break;
 
@@ -49,7 +50,8 @@ namespace ResearchProgram
                     {
                         OpenFileDialog openFileDialog = new OpenFileDialog();
                         openFileDialog.ShowDialog();
-                        singleReadFileAndRun(openFileDialog.FileName, "Thread" + (count + 1));
+                        if(openFileDialog.SafeFileNames.Length > 0)
+                            singleReadFileAndRun(openFileDialog.FileName, "Thread" + (count + 1));
                     }
                     break;
 
@@ -58,7 +60,8 @@ namespace ResearchProgram
                     {
                         OpenFileDialog openFileDialog = new OpenFileDialog();
                         openFileDialog.ShowDialog();
-                        multiReadFileAndRun(openFileDialog.FileName, "Thread" + (count + 1));
+                        //if(openFileDialog.SafeFileNames.Length > 0)
+                            //multiReadFileAndRun(openFileDialog.FileName, "Thread" + (count + 1));
                     }
                     break;
             }
@@ -66,6 +69,55 @@ namespace ResearchProgram
         }
 
         static void simpleReadFileAndRun(String fileName, String toAppend)
+        {
+            List<ulong[]> setList = new List<ulong[]>();
+            List<ulong[]> scaleList = new List<ulong[]>();
+            List<ulong[]> dList = new List<ulong[]>();
+
+            Regex reg = new Regex(" +");
+
+            bool run;
+            ulong inputSize = 0;
+            using(TextReader reader = File.OpenText(fileName))
+            {
+                string line = getNextNonEmptyLine(reader);
+                run = line[0] == 'y';
+                if(run)
+                {
+                    line = getNextNonEmptyLine(reader);
+                    inputSize = ulong.Parse(line.Split()[1]);
+                    line = getNextNonEmptyLine(reader);
+                    while(line != null)
+                    {
+                        string[] numbers = reg.Split(line);
+                        setList.Add(lineToArray(numbers));
+
+                        line = getNextNonEmptyLine(reader);
+                        numbers = reg.Split(line);
+                        scaleList.Add(lineToArray(numbers));
+
+                        line = getNextNonEmptyLine(reader);
+                        numbers = reg.Split(line);
+                        dList.Add(lineToArray(numbers));
+
+                        line = getNextNonEmptyLine(reader);
+                    }
+                }
+            }
+            if(run)
+            {
+                lock(updateProgressLocker)
+                {
+                    totalToRun += setList.Count;
+                }
+                new Thread(delegate()
+                {
+                    simpleMultiTest(inputSize, setList, scaleList, dList, toAppend);
+                }).Start();
+            }
+        }
+
+        static void singleReadFileAndRun(String fileName, String toAppend)
         {
             List<ulong[]> setList = new List<ulong[]>();
             List<ulong[]> scaleList = new List<ulong[]>();
@@ -167,6 +219,109 @@ namespace ResearchProgram
                                     oldBigGFromFormula,
                                     density[dListIndex],
                                     density[dListIndex] * currentD * oldBigGFromFormula);
+                }
+
+                updateProgress(setList[setListIndex]);
+            }
+
+            lock(excelWriteLocder)
+            {
+                string fileName = DateTime.Now.ToString() + toAppendToFile;
+                fileName = fileName.Replace('/', '-');
+                fileName = fileName.Replace(':', '_');
+                fileName = fileName.Trim();
+                fileName = "data/" + fileName + "_inputSize=" + inputSize.ToString() + ".xlsx";
+                FileWriter.saveTable(fileName, table);
+            }
+
+            Console.Out.WriteLine(toAppendToFile + " Completed");
+        }
+
+        static void singleMultiTest(ulong inputSize, List<ulong[]> setList, List<ulong[]> scaleList, List<ulong[]> dList, string toAppendToFile)
+        {
+            Console.Out.WriteLine("Starting " + toAppendToFile);
+            DataTable table = FileWriter.getSimpleTable();
+
+            for(int setListIndex = 0; setListIndex < setList.Count; setListIndex++)
+            {
+                double[] density = NumberCruncher.densityOfUMultiD(toAppendToFile + " set #" + (setListIndex + 1), inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
+
+                for(long dListIndex = 0; dListIndex < density.Length; dListIndex++)
+                {
+                    ulong currentD = dList[setListIndex][dListIndex];
+                    ulong littleGFromFormula = getLittleG(scaleList[setListIndex], currentD);
+                    ulong bigGFromFormula = getBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
+                    ulong oldBigGFromFormula = getOldBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
+
+
+
+                    table.Rows.Add(getArrayNumberString(setList[setListIndex], scaleList[setListIndex]),
+                                    currentD,
+                                    oldBigGFromFormula,
+                                    density[dListIndex],
+                                    density[dListIndex] * currentD * oldBigGFromFormula);
+                }
+
+                updateProgress(setList[setListIndex]);
+            }
+
+            lock(excelWriteLocder)
+            {
+                string fileName = DateTime.Now.ToString() + toAppendToFile;
+                fileName = fileName.Replace('/', '-');
+                fileName = fileName.Replace(':', '_');
+                fileName = fileName.Trim();
+                fileName = "data/" + fileName + "_inputSize=" + inputSize.ToString() + ".xlsx";
+                FileWriter.saveTable(fileName, table);
+            }
+
+            Console.Out.WriteLine(toAppendToFile + " Completed");
+        }
+
+         static void multiTest(ulong inputSize, List<ulong[]> setList, List<ulong[]> scaleList, List<ulong[]> dList, string toAppendToFile)
+        {
+            Console.Out.WriteLine("Starting " + toAppendToFile);
+            DataTable table = FileWriter.getSingleTable();
+
+            for(int setListIndex = 0; setListIndex < setList.Count; setListIndex++)
+            {
+                double[] density = NumberCruncher.densityOfUMultiD(toAppendToFile + " set #" + (setListIndex+1), inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
+
+                for(int dListIndex = 0; dListIndex < density.Length; dListIndex++)
+                {
+                    ulong currentD = dList[setListIndex][dListIndex];
+                    ulong littleGFromFormula = getLittleG(scaleList[setListIndex], currentD);
+                    ulong bigGFromFormula = getBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
+                    ulong oldBigGFromFormula = getOldBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
+                    double formulaOneSum = getFormulaOneSum(scaleList[setListIndex], setList[setListIndex], dList[setListIndex][dListIndex]);
+                    double formulaOne = getFormulaOne(scaleList[setListIndex], setList[setListIndex], dList[setListIndex][dListIndex]);
+                    double formulaTwo = getFormulaThree(toAppendToFile + " Formula Two Calculation set #" + (setListIndex+1) + " d#" + (dListIndex+1), oldBigGFromFormula, littleGFromFormula, currentD, inputSize);
+                    double formulaThree = getFormulaThree(toAppendToFile + " Formula Three Calculation set #" + (setListIndex+1) + " d#" + (dListIndex+1), bigGFromFormula, littleGFromFormula, currentD, inputSize);
+
+                    double errorOne = Math.Abs(formulaOne - density[dListIndex]) / density[dListIndex];
+                    double errorTwo = Math.Abs(formulaTwo - density[dListIndex]) / density[dListIndex];
+                    double errorThree = Math.Abs(formulaThree - density[dListIndex]) / density[dListIndex];
+
+                    string winner;
+
+                    if(errorOne < errorTwo && errorOne < errorThree)
+                    {
+                        winner = "Formula One";
+                    }
+                    else if(errorTwo < errorThree)
+                    {
+                        winner = "Formula Two";
+                    }
+                    else
+                    {
+                        winner = "Formula Three";
+                    }
+
+                    table.Rows.Add(getArrayNumberString(setList[setListIndex], scaleList[setListIndex]),
+                                    currentD,
+                                    littleGFromFormula, oldBigGFromFormula, bigGFromFormula, formulaOneSum,
+                                    density[dListIndex], formulaOne, formulaTwo, formulaThree,
+                                    errorOne, errorTwo, errorThree, winner);
                 }
 
                 updateProgress(setList[setListIndex]);
