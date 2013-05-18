@@ -161,7 +161,7 @@ namespace ResearchProgram
                 }
                 new Thread(delegate()
                 {
-                    simpleMultiTest(inputSize, setList, scaleList, dList, toAppend);
+                    singleMultiTest(inputSize, setList, scaleList, dList, toAppend);
                 }).Start();
             }
         }
@@ -278,62 +278,42 @@ namespace ResearchProgram
             Console.Out.WriteLine(toAppendToFile + " Completed");
         }
 
-         static void multiTest(ulong inputSize, List<ulong[]> setList, List<ulong[]> scaleList, List<ulong[]> dList, string toAppendToFile)
+          static void multiSetTest(ulong inputSize, ulong[][][] setList, ulong[][][] scaleList, ulong[][] dList, string toAppendToFile)
         {
             Console.Out.WriteLine("Starting " + toAppendToFile);
-            DataTable table = FileWriter.getSingleTable();
 
-            for(int setListIndex = 0; setListIndex < setList.Count; setListIndex++)
+            DataTable table = new DataTable("Data");
+
+            table.Columns.Add("Set #1", typeof(string));
+            table.Columns.Add("d #1", typeof(double));
+            table.Columns.Add("Density #1", typeof(double));
+            table.Columns.Add("Set #2", typeof(string));
+            table.Columns.Add("d #2", typeof(double));
+            table.Columns.Add("Density #2", typeof(double));
+            table.Columns.Add("Multiple Multiset Density", typeof(double));
+            table.Columns.Add("Product of Density #1 and Density #2", typeof(double));
+            table.Columns.Add("Error", typeof(double));
+
+            for(int setListIndex = 0; setListIndex < setList.Length; setListIndex++)
             {
-                double[] density = NumberCruncher.densityOfUMultiD(toAppendToFile + " set #" + (setListIndex+1), inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
+                double[] density = NumberCruncher.densityOfUMultipleSets(toAppendToFile + " set #" + (setListIndex + 1), inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
 
-                for(int dListIndex = 0; dListIndex < density.Length; dListIndex++)
-                {
-                    ulong currentD = dList[setListIndex][dListIndex];
-                    ulong littleGFromFormula = getLittleG(scaleList[setListIndex], currentD);
-                    ulong bigGFromFormula = getBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
-                    ulong oldBigGFromFormula = getOldBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
-                    double formulaOneSum = getFormulaOneSum(scaleList[setListIndex], setList[setListIndex], dList[setListIndex][dListIndex]);
-                    double formulaOne = getFormulaOne(scaleList[setListIndex], setList[setListIndex], dList[setListIndex][dListIndex]);
-                    double formulaTwo = getFormulaThree(toAppendToFile + " Formula Two Calculation set #" + (setListIndex+1) + " d#" + (dListIndex+1), oldBigGFromFormula, littleGFromFormula, currentD, inputSize);
-                    double formulaThree = getFormulaThree(toAppendToFile + " Formula Three Calculation set #" + (setListIndex+1) + " d#" + (dListIndex+1), bigGFromFormula, littleGFromFormula, currentD, inputSize);
 
-                    double errorOne = Math.Abs(formulaOne - density[dListIndex]) / density[dListIndex];
-                    double errorTwo = Math.Abs(formulaTwo - density[dListIndex]) / density[dListIndex];
-                    double errorThree = Math.Abs(formulaThree - density[dListIndex]) / density[dListIndex];
 
-                    string winner;
+                table.Rows.Add(getArrayNumberString(setList[setListIndex][0], scaleList[setListIndex][0]), dList[setListIndex][0], density[0],
+                               getArrayNumberString(setList[setListIndex][1], scaleList[setListIndex][1]), dList[setListIndex][0], density[1],
+                               density[2], density[0]*density[1], Math.Abs(density[0]*density[1] - density[2])/density[0]*density[1]);
 
-                    if(errorOne < errorTwo && errorOne < errorThree)
-                    {
-                        winner = "Formula One";
-                    }
-                    else if(errorTwo < errorThree)
-                    {
-                        winner = "Formula Two";
-                    }
-                    else
-                    {
-                        winner = "Formula Three";
-                    }
-
-                    table.Rows.Add(getArrayNumberString(setList[setListIndex], scaleList[setListIndex]),
-                                    currentD,
-                                    littleGFromFormula, oldBigGFromFormula, bigGFromFormula, formulaOneSum,
-                                    density[dListIndex], formulaOne, formulaTwo, formulaThree,
-                                    errorOne, errorTwo, errorThree, winner);
-                }
-
-                updateProgress(setList[setListIndex]);
+                updateProgress(setList[setListIndex][0]);
             }
 
             lock(excelWriteLocder)
             {
-                string fileName = DateTime.Now.ToString() + toAppendToFile;
+                string fileName = DateTime.Now.ToString() + toAppendToFile + ".xlsx";
                 fileName = fileName.Replace('/', '-');
                 fileName = fileName.Replace(':', '_');
                 fileName = fileName.Trim();
-                fileName = "data/" + fileName + "_inputSize=" + inputSize.ToString() + ".xlsx";
+                fileName = "data/" + fileName;
                 FileWriter.saveTable(fileName, table);
             }
 

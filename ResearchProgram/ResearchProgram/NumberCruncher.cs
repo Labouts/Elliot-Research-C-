@@ -60,6 +60,65 @@ namespace ResearchProgram
             return density;
         }
 
+        public static double[] densityOfUMultipleSets(string id, ulong inputSize, ulong[][] setList, ulong[][] scale, ulong[] dList)
+        {
+            ulong[] totalFactors = new ulong[setList.Length];
+            ulong[] currNumFactors = new ulong[setList.Length];
+            ulong[] numWasTrue = new ulong[setList.Length + 1];
+
+            uint betweenPrint = 100000000;
+            uint tillPrint = betweenPrint;
+
+            for(ulong number = 0; number < inputSize; number++)
+            {
+                for(uint setIndex = 0; setIndex < setList.Length; setIndex++)
+                {
+                    for(uint numberIndex = 0; numberIndex < setList[setIndex].Length; numberIndex++)
+                    {
+                        currNumFactors[setIndex] += w(number, setList[setIndex][numberIndex]) * scale[setIndex][numberIndex];
+                    }
+
+                    totalFactors[setIndex] += currNumFactors[setIndex];
+                }
+
+                Boolean allTrue = true;
+                for(int index = 0; index < setList.Length; index++)
+                {
+                    totalFactors[index] %= dList[index];
+                    if(totalFactors[index] == 0)
+                    {
+                        numWasTrue[index] += 1;
+                    }
+                    else
+                    {
+                        allTrue = false;
+                    }
+                }
+
+                if(allTrue)
+                {
+                    numWasTrue[setList.Length] += 1;
+                }
+
+                tillPrint--;
+
+                if(tillPrint <= 0)
+                {
+                    tillPrint = betweenPrint;
+                    Console.Out.WriteLine(id + " is " + number / (double)inputSize * 100 + "% done");
+                }
+            }
+
+            double[] density = new double[dList.Length+1];
+
+            for(int index = 0; index < dList.Length+1; index++)
+            {
+                density[index] = numWasTrue[index] / (double)inputSize;
+            }
+
+            return density;
+        }
+
         public static ulong w(ulong number, ulong divisor)
         {
             if(number < 1)
