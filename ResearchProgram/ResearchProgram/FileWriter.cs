@@ -19,7 +19,20 @@ namespace ResearchProgram
             wb.SaveAs(fileName);
         }
 
-        public static DataTable getTable()
+        public static DataTable getSimpleTable()
+        {
+            DataTable table = new DataTable("Data");
+            table.Columns.Add("Set", typeof(string));
+            table.Columns.Add("d", typeof(long));
+            table.Columns.Add("H = GCD( d, 2*S'(2), 3*S'(3), ... n*S'(n))", typeof(double));
+            table.Columns.Add("Density", typeof(double));
+            table.Columns.Add("density*d*H", typeof(double));
+            
+
+            return table;
+        }
+
+                public static DataTable getMultiTable()
         {
             DataTable table = new DataTable("Data");
             table.Columns.Add("Set", typeof(string));

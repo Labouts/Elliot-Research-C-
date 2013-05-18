@@ -6,7 +6,7 @@ using System.Data;
 using System.Threading;
 using System.IO;
 using System.Text.RegularExpressions;
-
+using System.Windows.Forms;
 namespace ResearchProgram
 {
     class Program
@@ -19,13 +19,53 @@ namespace ResearchProgram
 
         static void Main(string[] args)
         {
-            readFileAndRun("ThreadOneInput.txt", "ThreadOne");
-            readFileAndRun("ThreadTwoInput.txt", "ThreadTwo");
-            readFileAndRun("ThreadThreeInput.txt", "ThreadThree");
-            readFileAndRun("ThreadFourInput.txt", "ThreadFour");
+            int choice = 0;
+            while(choice < 1 || choice > 3)
+            {
+                Console.Out.WriteLine("Which version do you want to run?\n1. Simple Single \n2. Complex Single \n3. Multiple Sets");
+                choice = Console.In.Read();
+                if(choice < 1 || choice > 3)
+                {
+                    Console.Out.WriteLine("Invalid Choice");
+                }
+            }
+
+            Console.Out.WriteLine("How many threads do you want to run?");
+            int numThreads = Console.In.Read();
+
+            switch(choice)
+            {
+                case 1:
+                    for(int count = 0; count < numThreads; count++)
+                    {
+                        OpenFileDialog openFileDialog = new OpenFileDialog();
+                        openFileDialog.ShowDialog();
+                        simpleReadFileAndRun(openFileDialog.FileName, "Thread" + (count + 1));
+                    }
+                    break;
+
+                case 2:
+                    for(int count = 0; count < numThreads; count++)
+                    {
+                        OpenFileDialog openFileDialog = new OpenFileDialog();
+                        openFileDialog.ShowDialog();
+                        singleReadFileAndRun(openFileDialog.FileName, "Thread" + (count + 1));
+                    }
+                    break;
+
+                case 3:
+                    for(int count = 0; count < numThreads; count++)
+                    {
+                        OpenFileDialog openFileDialog = new OpenFileDialog();
+                        openFileDialog.ShowDialog();
+                        multiReadFileAndRun(openFileDialog.FileName, "Thread" + (count + 1));
+                    }
+                    break;
+            }
+
         }
 
-        static void readFileAndRun(String fileName, String toAppend)
+        static void simpleReadFileAndRun(String fileName, String toAppend)
         {
             List<ulong[]> setList = new List<ulong[]>();
             List<ulong[]> scaleList = new List<ulong[]>();
@@ -39,12 +79,12 @@ namespace ResearchProgram
             {
                 string line = getNextNonEmptyLine(reader);
                 run = line[0] == 'y';
-                if (run)
+                if(run)
                 {
                     line = getNextNonEmptyLine(reader);
                     inputSize = ulong.Parse(line.Split()[1]);
                     line = getNextNonEmptyLine(reader);
-                    while (line != null)
+                    while(line != null)
                     {
                         string[] numbers = reg.Split(line);
                         setList.Add(lineToArray(numbers));
@@ -61,15 +101,15 @@ namespace ResearchProgram
                     }
                 }
             }
-            if (run)
+            if(run)
             {
-                lock (updateProgressLocker)
+                lock(updateProgressLocker)
                 {
                     totalToRun += setList.Count;
                 }
                 new Thread(delegate()
                 {
-                    multiTest(inputSize, setList, scaleList, dList, toAppend);
+                    simpleMultiTest(inputSize, setList, scaleList, dList, toAppend);
                 }).Start();
             }
         }
@@ -104,14 +144,14 @@ namespace ResearchProgram
             return numArray;
         }
 
-        static void multiTest(ulong inputSize, List<ulong[]> setList, List<ulong[]> scaleList, List<ulong[]> dList, string toAppendToFile)
+        static void simpleMultiTest(ulong inputSize, List<ulong[]> setList, List<ulong[]> scaleList, List<ulong[]> dList, string toAppendToFile)
         {
             Console.Out.WriteLine("Starting " + toAppendToFile);
-            DataTable table = FileWriter.getTable();
+            DataTable table = FileWriter.getSimpleTable();
 
             for(int setListIndex = 0; setListIndex < setList.Count; setListIndex++)
             {
-                double[] density = NumberCruncher.densityOfUMultiD(toAppendToFile + " set #" + (setListIndex+1), inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
+                double[] density = NumberCruncher.densityOfUMultiD(toAppendToFile + " set #" + (setListIndex + 1), inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
 
                 for(long dListIndex = 0; dListIndex < density.Length; dListIndex++)
                 {
@@ -119,8 +159,8 @@ namespace ResearchProgram
                     ulong littleGFromFormula = getLittleG(scaleList[setListIndex], currentD);
                     ulong bigGFromFormula = getBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
                     ulong oldBigGFromFormula = getOldBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
-                    
-                   
+
+
 
                     table.Rows.Add(getArrayNumberString(setList[setListIndex], scaleList[setListIndex]),
                                     currentD,
