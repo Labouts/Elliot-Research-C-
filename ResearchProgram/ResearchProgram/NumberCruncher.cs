@@ -8,41 +8,51 @@ namespace ResearchProgram
 {
     static class NumberCruncher
     {
-        public static double[] densityOfUMultiD(string id, ulong inputSize, uint[] set, uint[] scale, uint[] dList)
+        public static double[] densityOfUMultiD(string id, ulong inputSize, ulong[] set, ulong[] scale, ulong[] dList)
         {
-            ulong totalFactors = 0;
-            ulong currNumFactors = 0;
+            ulong[] currNumFactors = new ulong[dList.Length];
+            ulong[] totalFactors = new ulong[dList.Length];
             ulong[] numWasTrue = new ulong[dList.Length];
 
-            uint betweenPrint = 100000000;
-            uint tillPrint = betweenPrint;
+            ulong betweenPrlong = 100000000;
+            ulong tillPrlong = betweenPrlong;
 
             for(ulong number = 0; number < inputSize; number++)
-            {
+            {                
+                ulong toAdd = 0;
                 for(uint index = 0; index < set.Length; index++)
                 {
-                    currNumFactors += w(number, set[index]) * scale[index];
+                    toAdd += w(number, set[index]) * scale[index];
                 }
-                totalFactors += currNumFactors;
 
-                for(int index = 0; index < dList.Length; index++)
+                for(uint index = 0; index < dList.Length; index++)
                 {
-                    if(totalFactors % dList[index] == 0)
+                    currNumFactors[index] += toAdd;
+                    currNumFactors[index] %= dList[index];
+                    totalFactors[index] += currNumFactors[index];
+                    totalFactors[index] %= dList[index];
+
+                    if(totalFactors[index] == 0)
                         numWasTrue[index] += 1;
                 }
 
-                tillPrint--;
+                tillPrlong--;
 
-                if(tillPrint <= 0)
+                if(tillPrlong <= 0)
                 {
-                    tillPrint = betweenPrint;
-                    Console.Out.WriteLine(id + " is " + number / (double)inputSize * 100 + "% done");
+                    tillPrlong = betweenPrlong;
+                    for(uint index = 0; index < dList.Length; index++) { 
+                        Console.Out.WriteLine(id + " is " + number / (double)inputSize * 100 + "% done");
+                        double dense = numWasTrue[0]/(double)number;
+                        Console.Out.WriteLine("numTrue is " + numWasTrue[0]);
+                        Console.Out.WriteLine("First is " + dense);                 
+                }
                 }
             }
 
             double[] density = new double[dList.Length];
 
-            for(int index = 0; index < dList.Length; index++)
+            for(long index = 0; index < dList.Length; index++)
             {
                 density[index] = numWasTrue[index] / (double)inputSize;
             }
@@ -50,7 +60,7 @@ namespace ResearchProgram
             return density;
         }
 
-        public static ulong w(ulong number, uint divisor)
+        public static ulong w(ulong number, ulong divisor)
         {
             if(number < 1)
                 return 0;
@@ -64,9 +74,9 @@ namespace ResearchProgram
             return count;
         }
 
-        public static uint GCD(params uint[] numbers)
+        public static ulong GCD(params ulong[] numbers)
         {
-            Func<uint, uint, uint> gcd = null;
+            Func<ulong, ulong, ulong> gcd = null;
             gcd = (a, b) => (b == 0 ? a : gcd(b, a % b));
             return numbers.Aggregate(gcd);
         }

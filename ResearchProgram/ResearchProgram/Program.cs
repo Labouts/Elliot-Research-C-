@@ -11,8 +11,8 @@ namespace ResearchProgram
 {
     class Program
     {
-        private static int numDone = 0;
-        private static int totalToRun = 0;
+        private static long numDone = 0;
+        private static long totalToRun = 0;
         private static Dictionary<ulong, Dictionary<ulong, double>> densityCache = new Dictionary<ulong, Dictionary<ulong, double>>();
         private static readonly object excelWriteLocder = new object();
         private static readonly object updateProgressLocker = new object();
@@ -27,9 +27,9 @@ namespace ResearchProgram
 
         static void readFileAndRun(String fileName, String toAppend)
         {
-            List<uint[]> setList = new List<uint[]>();
-            List<uint[]> scaleList = new List<uint[]>();
-            List<uint[]> dList = new List<uint[]>();
+            List<ulong[]> setList = new List<ulong[]>();
+            List<ulong[]> scaleList = new List<ulong[]>();
+            List<ulong[]> dList = new List<ulong[]>();
 
             Regex reg = new Regex(" +");
 
@@ -92,19 +92,19 @@ namespace ResearchProgram
             return line;
         }
 
-        private static uint[] lineToArray(string[] numbers)
+        private static ulong[] lineToArray(string[] numbers)
         {
-            uint[] numArray = new uint[numbers.Length - 1];
+            ulong[] numArray = new ulong[numbers.Length - 1];
 
-            for(int index = 0; index < numArray.Length; index++)
+            for(long index = 0; index < numArray.Length; index++)
             {
-                numArray[index] = uint.Parse(numbers[index + 1]);
+                numArray[index] = ulong.Parse(numbers[index + 1]);
             }
 
             return numArray;
         }
 
-        static void multiTest(ulong inputSize, List<uint[]> setList, List<uint[]> scaleList, List<uint[]> dList, string toAppendToFile)
+        static void multiTest(ulong inputSize, List<ulong[]> setList, List<ulong[]> scaleList, List<ulong[]> dList, string toAppendToFile)
         {
             Console.Out.WriteLine("Starting " + toAppendToFile);
             DataTable table = FileWriter.getTable();
@@ -113,41 +113,20 @@ namespace ResearchProgram
             {
                 double[] density = NumberCruncher.densityOfUMultiD(toAppendToFile + " set #" + (setListIndex+1), inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
 
-                for(int dListIndex = 0; dListIndex < density.Length; dListIndex++)
+                for(long dListIndex = 0; dListIndex < density.Length; dListIndex++)
                 {
-                    uint currentD = dList[setListIndex][dListIndex];
-                    uint littleGFromFormula = getLittleG(scaleList[setListIndex], currentD);
-                    uint bigGFromFormula = getBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
-                    uint oldBigGFromFormula = getOldBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
-                    double formulaOneSum = getFormulaOneSum(scaleList[setListIndex], setList[setListIndex], dList[setListIndex][dListIndex]);
-                    double formulaOne = getFormulaOne(scaleList[setListIndex], setList[setListIndex], dList[setListIndex][dListIndex]);
-                    double formulaTwo = getFormulaThree(toAppendToFile + " Formula Two Calculation set #" + (setListIndex+1) + " d#" + (dListIndex+1), oldBigGFromFormula, littleGFromFormula, currentD, inputSize);
-                    double formulaThree = getFormulaThree(toAppendToFile + " Formula Three Calculation set #" + (setListIndex+1) + " d#" + (dListIndex+1), bigGFromFormula, littleGFromFormula, currentD, inputSize);
-
-                    double errorOne = Math.Abs(formulaOne - density[dListIndex]) / density[dListIndex];
-                    double errorTwo = Math.Abs(formulaTwo - density[dListIndex]) / density[dListIndex];
-                    double errorThree = Math.Abs(formulaThree - density[dListIndex]) / density[dListIndex];
-
-                    string winner;
-
-                    if(errorOne < errorTwo && errorOne < errorThree)
-                    {
-                        winner = "Formula One";
-                    }
-                    else if(errorTwo < errorThree)
-                    {
-                        winner = "Formula Two";
-                    }
-                    else
-                    {
-                        winner = "Formula Three";
-                    }
+                    ulong currentD = dList[setListIndex][dListIndex];
+                    ulong littleGFromFormula = getLittleG(scaleList[setListIndex], currentD);
+                    ulong bigGFromFormula = getBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
+                    ulong oldBigGFromFormula = getOldBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
+                    
+                   
 
                     table.Rows.Add(getArrayNumberString(setList[setListIndex], scaleList[setListIndex]),
                                     currentD,
-                                    littleGFromFormula, oldBigGFromFormula, bigGFromFormula, formulaOneSum,
-                                    density[dListIndex], formulaOne, formulaTwo, formulaThree,
-                                    errorOne, errorTwo, errorThree, winner);
+                                    oldBigGFromFormula,
+                                    density[dListIndex],
+                                    density[dListIndex] * currentD * oldBigGFromFormula);
                 }
 
                 updateProgress(setList[setListIndex]);
@@ -166,10 +145,10 @@ namespace ResearchProgram
             Console.Out.WriteLine(toAppendToFile + " Completed");
         }
 
-        static uint getLittleG(uint[] scales, uint d)
+        static ulong getLittleG(ulong[] scales, ulong d)
         {
-            uint[] gcdTwoArray = new uint[scales.Length + 1];
-            for(int gcdIndex = 0; gcdIndex < scales.Length; gcdIndex++)
+            ulong[] gcdTwoArray = new ulong[scales.Length + 1];
+            for(long gcdIndex = 0; gcdIndex < scales.Length; gcdIndex++)
             {
                 gcdTwoArray[gcdIndex] = scales[gcdIndex];
             }
@@ -178,10 +157,10 @@ namespace ResearchProgram
             return NumberCruncher.GCD(gcdTwoArray);
         }
 
-        static uint getBigG(uint[] set, uint[] scales, uint d, uint littleG)
+        static ulong getBigG(ulong[] set, ulong[] scales, ulong d, ulong littleG)
         {
-            uint[] gcdSet = new uint[scales.Length];
-            for(int gcdIndex = 0; gcdIndex < scales.Length; gcdIndex++)
+            ulong[] gcdSet = new ulong[scales.Length];
+            for(long gcdIndex = 0; gcdIndex < scales.Length; gcdIndex++)
             {
                 gcdSet[gcdIndex] = set[gcdIndex] * (scales[gcdIndex] % d);
             }
@@ -189,10 +168,10 @@ namespace ResearchProgram
             return NumberCruncher.GCD(gcdSet) / littleG;
         }
 
-        static uint getOldBigG(uint[] set, uint[] scales, uint d, uint littleG)
+        static ulong getOldBigG(ulong[] set, ulong[] scales, ulong d, ulong littleG)
         {
-            uint[] gcdSet = new uint[scales.Length + 1];
-            for(int gcdIndex = 0; gcdIndex < scales.Length; gcdIndex++)
+            ulong[] gcdSet = new ulong[scales.Length + 1];
+            for(long gcdIndex = 0; gcdIndex < scales.Length; gcdIndex++)
             {
                 gcdSet[gcdIndex] = set[gcdIndex] * (scales[gcdIndex] % d);
             }
@@ -201,40 +180,40 @@ namespace ResearchProgram
 
             return NumberCruncher.GCD(gcdSet) / littleG;
         }
-        public static double getFormulaOneSum(uint[] setList, uint[] scaleList, uint d)
+        public static double getFormulaOneSum(ulong[] setList, ulong[] scaleList, ulong d)
         {
-            uint littleGFromFormula = getLittleG(scaleList, d);
-            uint bigGFromFomula = getOldBigG(setList, scaleList, d, littleGFromFormula);
-            uint formulaSum = 0;
+            ulong littleGFromFormula = getLittleG(scaleList, d);
+            ulong bigGFromFomula = getOldBigG(setList, scaleList, d, littleGFromFormula);
+            ulong formulaSum = 0;
 
-            for(uint sumIndex = 1; sumIndex < bigGFromFomula + 1; sumIndex++)
+            for(ulong sumIndex = 1; sumIndex < bigGFromFomula + 1; sumIndex++)
             {
-                uint[] tempArray = { sumIndex, bigGFromFomula };
+                ulong[] tempArray = { sumIndex, bigGFromFomula };
                 formulaSum += NumberCruncher.GCD(tempArray);
             }
 
             return formulaSum;
         }
 
-        public static double getFormulaOne(uint[] setList, uint[] scaleList, uint d)
+        public static double getFormulaOne(ulong[] setList, ulong[] scaleList, ulong d)
         {
-            uint littleGFromFormula = getLittleG(scaleList, d);
-            uint bigGFromFomula = getOldBigG(setList, scaleList, d, littleGFromFormula);
-            uint formulaSum = 0;
+            ulong littleGFromFormula = getLittleG(scaleList, d);
+            ulong bigGFromFomula = getOldBigG(setList, scaleList, d, littleGFromFormula);
+            ulong formulaSum = 0;
 
-            for(uint sumIndex = 1; sumIndex < bigGFromFomula + 1; sumIndex++)
+            for(ulong sumIndex = 1; sumIndex < bigGFromFomula + 1; sumIndex++)
             {
-                uint[] tempArray = { sumIndex, bigGFromFomula };
+                ulong[] tempArray = { sumIndex, bigGFromFomula };
                 formulaSum += NumberCruncher.GCD(tempArray);
             }
 
             return littleGFromFormula / (double)(d * bigGFromFomula) * formulaSum;
         }
-        private static double getFormulaThree(string id, uint bigG, uint littleG, uint d, ulong inputSize)
+        private static double getFormulaThree(string id, ulong bigG, ulong littleG, ulong d, ulong inputSize)
         {
-            uint[] formDivisor = { bigG };
-            uint[] formScale = { 1 };
-            uint[] formFactor = { d / littleG };
+            ulong[] formDivisor = { bigG };
+            ulong[] formScale = { 1 };
+            ulong[] formFactor = { d / littleG };
 
             double expectedDensity;
             if(formFactor[0] == 1 || formDivisor[0] == 1)
@@ -260,7 +239,7 @@ namespace ResearchProgram
             return expectedDensity;
         }
 
-        private static void updateProgress(uint[] setList)
+        private static void updateProgress(ulong[] setList)
         {
             lock(updateProgressLocker)
             {
@@ -270,11 +249,11 @@ namespace ResearchProgram
             Console.Out.WriteLine(100 * numDone / totalToRun + "% done\n");
         }
 
-        static string getArrayNumberString(uint[] numbers, uint[] scales)
+        static string getArrayNumberString(ulong[] numbers, ulong[] scales)
         {
             string numString = "";
             Boolean firstNum = true;
-            for(int index = 0; index < numbers.Length; index++)
+            for(long index = 0; index < numbers.Length; index++)
             {
                 if(!firstNum)
                 {
@@ -287,7 +266,7 @@ namespace ResearchProgram
 
                 numString += numbers[index];
 
-                for(int timesWritten = 1; timesWritten < scales[index]; timesWritten++)
+                for(uint timesWritten = 1; timesWritten < scales[index]; timesWritten++)
                 {
                     numString += ", ";
                     numString += numbers[index];
@@ -297,13 +276,13 @@ namespace ResearchProgram
             return numString;
         }
 
-        static string getFileName(uint[] set, uint[] scale, string subDirectory)
+        static string getFileName(ulong[] set, ulong[] scale, string subDirectory)
         {
             string fileName = "data/" + subDirectory + "/{";
             bool isFirst = true;
-            for(int index = 0; index < set.Length; index++)
+            for(uint index = 0; index < set.Length; index++)
             {
-                for(int d = 0; d < scale[index]; d++)
+                for(uint d = 0; d < scale[index]; d++)
                 {
                     if(isFirst)
                     {
