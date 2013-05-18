@@ -240,26 +240,47 @@ namespace ResearchProgram
         static void singleMultiTest(ulong inputSize, List<ulong[]> setList, List<ulong[]> scaleList, List<ulong[]> dList, string toAppendToFile)
         {
             Console.Out.WriteLine("Starting " + toAppendToFile);
-            DataTable table = FileWriter.getSimpleTable();
+            DataTable table = FileWriter.getSingleTable();
 
             for(int setListIndex = 0; setListIndex < setList.Count; setListIndex++)
             {
-                double[] density = NumberCruncher.densityOfUMultiD(toAppendToFile + " set #" + (setListIndex + 1), inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
+                double[] density = NumberCruncher.densityOfUMultiD(toAppendToFile + " set #" + (setListIndex+1), inputSize, setList[setListIndex], scaleList[setListIndex], dList[setListIndex]);
 
-                for(long dListIndex = 0; dListIndex < density.Length; dListIndex++)
+                for(int dListIndex = 0; dListIndex < density.Length; dListIndex++)
                 {
                     ulong currentD = dList[setListIndex][dListIndex];
                     ulong littleGFromFormula = getLittleG(scaleList[setListIndex], currentD);
                     ulong bigGFromFormula = getBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
                     ulong oldBigGFromFormula = getOldBigG(setList[setListIndex], scaleList[setListIndex], currentD, littleGFromFormula);
+                    double formulaOneSum = getFormulaOneSum(scaleList[setListIndex], setList[setListIndex], dList[setListIndex][dListIndex]);
+                    double formulaOne = getFormulaOne(scaleList[setListIndex], setList[setListIndex], dList[setListIndex][dListIndex]);
+                    double formulaTwo = getFormulaThree(toAppendToFile + " Formula Two Calculation set #" + (setListIndex+1) + " d#" + (dListIndex+1), oldBigGFromFormula, littleGFromFormula, currentD, inputSize);
+                    double formulaThree = getFormulaThree(toAppendToFile + " Formula Three Calculation set #" + (setListIndex+1) + " d#" + (dListIndex+1), bigGFromFormula, littleGFromFormula, currentD, inputSize);
 
+                    double errorOne = Math.Abs(formulaOne - density[dListIndex]) / density[dListIndex];
+                    double errorTwo = Math.Abs(formulaTwo - density[dListIndex]) / density[dListIndex];
+                    double errorThree = Math.Abs(formulaThree - density[dListIndex]) / density[dListIndex];
 
+                    string winner;
+
+                    if(errorOne < errorTwo && errorOne < errorThree)
+                    {
+                        winner = "Formula One";
+                    }
+                    else if(errorTwo < errorThree)
+                    {
+                        winner = "Formula Two";
+                    }
+                    else
+                    {
+                        winner = "Formula Three";
+                    }
 
                     table.Rows.Add(getArrayNumberString(setList[setListIndex], scaleList[setListIndex]),
                                     currentD,
-                                    oldBigGFromFormula,
-                                    density[dListIndex],
-                                    density[dListIndex] * currentD * oldBigGFromFormula);
+                                    littleGFromFormula, oldBigGFromFormula, bigGFromFormula, formulaOneSum,
+                                    density[dListIndex], formulaOne, formulaTwo, formulaThree,
+                                    errorOne, errorTwo, errorThree, winner);
                 }
 
                 updateProgress(setList[setListIndex]);
